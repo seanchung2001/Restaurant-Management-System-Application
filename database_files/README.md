@@ -1,4 +1,4 @@
-# Database Seteup
+# Database Setup
 
 ## Create directories to store database files and schema file
 - Start in root:
