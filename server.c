@@ -40,9 +40,9 @@ int main(void) {
 	SIGEV_PULSE_INIT(&sigevent, coid, SIGEV_PULSE_PRIO_INHERIT, PERIODIC_TIMER_PULSE_CODE, 0);
 	timer_create(CLOCK_REALTIME, &sigevent, &timerID);
 
-	itime.it_value.tv_sec = 1; //60 millisecond expiry time
+	itime.it_value.tv_sec = 1; //1 second expire time
 	itime.it_value.tv_nsec = 0;
-	itime.it_interval.tv_sec = 1;
+	itime.it_interval.tv_sec = 1; //expire every 1 second
 	itime.it_interval.tv_nsec = 0;
 	timer_settime(timerID, 0, &itime, NULL);
 

@@ -1,10 +1,8 @@
-#ifndef _IOV_SERVER_H_
-#define _IOV_SERVER_H_
-
 #include <sys/iomsg.h>
 
 #define SERVER_NAME "rmsa" //use this as the name to register in the pathname space to create and connect to the channel
 
+//Will remove this once we figure out what exactly needs to be sent back to the client
 #define RESERVATION_SUCCESS   "Reservation was successful!"
 #define RESERVATION_FAILED    "Reservation failed, please try again"
 #define ONLINE_ORDER_SUCCESS  "Online order was successful!"
@@ -50,5 +48,3 @@ typedef struct recv_msg_table_order {
 	struct _pulse pulse;
 	char menu_item[MAX_STRING_LEN+1];
 } recv_msg_table_order_t;
-
-#endif //_IOV_SERVER_H_
