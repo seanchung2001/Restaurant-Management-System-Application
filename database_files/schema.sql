@@ -20,7 +20,7 @@ CREATE TABLE IN NOT EXISTS 'table' (
 
 -- These may be deleted at the end of the their date day
 CREATE TABLE IF NOT EXISTS 'reservation'(
-    'id'                INTEGER PRIMARY KEY AUTOINCREMENT,  -- This should prevent using deleted reservation's ids
+    'id'                INTEGER PRIMARY KEY,  -- This should prevent using deleted reservation's ids
     'table_number'      INTEGER NOT NULL,
     'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM" format
     'first_name'        TEXT NOT NULL,
