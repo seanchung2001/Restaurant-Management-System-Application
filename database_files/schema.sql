@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS 'reservation'(
     'phone_num'         INTEGER NOT NULL,
     'start_time'        TEXT NOT NULL,      -- "HH:MM"
     'duration'          INTEGER NOT NULL,   -- "HH:MM"
-    CONSTRAINT fk_reservation_table_number FOREIGN KEY ('table_number') REFERENCES 'table'('table_num')
+    CONSTRAINT fk_reservation_table_number FOREIGN KEY ('table_num') REFERENCES 'table'('table_num')
 );
 
 CREATE TABLE IF NOT EXISTS 'meta_tag'(

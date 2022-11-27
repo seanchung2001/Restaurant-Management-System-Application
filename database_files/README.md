@@ -23,9 +23,10 @@
 - cd /data/home/root/tmp
 - cd /etc/mm/sql
 - Copy the schema.sql file into the sql directory
-- sqlite3 restaurant_db.db
+- sqlite3 restaurant_db
     - cntrl + c to exit sqlite3
-- sqlite3 restaurant_db.db < /etc/mm/sql/schema.sql
+    - there should be a restaurant_db file made in the current directory
+- sqlite3 restaurant_db < /etc/mm/sql/schema.sql
     - cntrl + c to exit sqlite3
 
 ## Run QDB
