@@ -1,3 +1,2 @@
-@restaurant_db
-Filename::/data/home/root/tmp/restaurant_db
+Filename::/data/home/root/tmp/restaurant_db.db
 SchemaFile::/etc/mm/sql/schema.sql

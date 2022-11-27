@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS 'profile' (
     PRIMARY KEY('restaurant_name', 'address')
 );
 
-CREATE TABLE IN NOT EXISTS 'table' (
+CREATE TABLE IF NOT EXISTS 'table' (
     'table_num'         INTEGER PRIMARY KEY,
     'seat_num'          INTEGER NOT NULL,
     'isReserved'        INTEGER NOT NULL   -- 0 or 1 for false or true
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS 'reservation'(
 );
 
 CREATE TABLE IF NOT EXISTS 'meta_tag'(
-    'name'              TEXT PRIMARY KEY,
+    'name'              TEXT PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS 'menu_item'(
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS 'menu_item'(
     'type'              TEXT NOT NULL -- Entree, main, beverage, etc.  
 );
 
-CREATE TABLE IN NOT EXISTS 'online_order' (
+CREATE TABLE IF NOT EXISTS 'online_order' (
     'id'                INTEGER PRIMARY KEY,
     'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM"
     'total'             REAL NOT NULL,      -- Floating point 
