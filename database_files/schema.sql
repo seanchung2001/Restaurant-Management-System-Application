@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS 'table' (
 -- These may be deleted at the end of the their date day
 CREATE TABLE IF NOT EXISTS 'reservation'(
     'id'                INTEGER PRIMARY KEY,  -- This should prevent using deleted reservation's ids
-    'table_number'      INTEGER NOT NULL,
+    'table_num'      INTEGER NOT NULL,
     'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM" format
     'first_name'        TEXT NOT NULL,
     'last_name'         TEXT NOT NULL,
@@ -55,7 +55,9 @@ CREATE TABLE IF NOT EXISTS 'online_order' (
 CREATE TABLE IF NOT EXISTS 'table_order' (
     'id'                INTEGER PRIMARY KEY,
     'total'             REAL NOT NULL,      -- Floating point
-    'date'              TEXT NOT NULL       -- "YYYY-MM-DD HH:MM"
+    'date'              TEXT NOT NULL,       -- "YYYY-MM-DD HH:MM"
+    'table_num'         INTEGER NOT NULL,
+    CONSTRAINT fk_table_order_table_number FOREIGN KEY ('table_num') REFERENCES 'table'('table_num')
 );
 
 --START OF THE RELATIONAL TABLES
