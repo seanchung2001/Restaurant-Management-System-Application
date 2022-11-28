@@ -32,10 +32,11 @@ typedef struct recv_msg_reservation {
 	uint16_t duration; //required
 } recv_msg_reservation_t;
 
+//order number might be required
 typedef struct recv_msg_online_order {
 	uint16_t type;
 	struct _pulse pulse;
-	char *menu_items[MAX_STRING_LEN+1];
+	char *menu_items[MAX_STRING_LEN+1];//menu should be a string, items separated by a comma only (no space)
 	char date[MAX_STRING_LEN+1];
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
@@ -43,8 +44,17 @@ typedef struct recv_msg_online_order {
 	char phone_num[MAX_STRING_LEN+1];
 } recv_msg_online_order_t;
 
+//why is menu not a ptr here
+//order number might be required - just an int incrementing, daily resets
 typedef struct recv_msg_table_order {
 	uint16_t type;
 	struct _pulse pulse;
-	char menu_item[MAX_STRING_LEN+1];
+	char menu_item[MAX_STRING_LEN+1];//menu should be a string, items separated by a comma only (no space)
+	uint16_t table_num;
 } recv_msg_table_order_t;
+
+//need a header
+typedef struct cstm_hdr{
+	uint16_t type;
+	unsigned data_size;
+} header_t;
