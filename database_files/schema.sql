@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS 'table_order' (
 
 -- Represents the tags associated with a table
 CREATE TABLE IF NOT EXISTS 'table_tag'(
-    'table_num'         TEXT NOT NULL,
+    'table_num'         INTEGER NOT NULL,
     'name'              TEXT NOT NULL,
     PRIMARY KEY('table_num', 'name'),
     CONSTRAINT fk_table_tag_table_num FOREIGN KEY ('table_num') REFERENCES 'table'('table_num'),
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS 'table_tag'(
 
 CREATE TABLE IF NOT EXISTS 'on_order_item'(
     'name'              TEXT NOT NULL,
-    'oid'               TEXT NOT NULL,
+    'oid'               INTEGER NOT NULL,
     'count'             INTEGER NOT NULL,   -- Times this same item is ordered by the online order
     PRIMARY KEY('name', 'oid'),
     CONSTRAINT fk_on_order_item_name FOREIGN KEY ('name') REFERENCES 'menu_item'('name'),
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS 'on_order_item'(
 
 CREATE TABLE IF NOT EXISTS 'tab_order_item'(
     'name'              TEXT NOT NULL,
-    'oid'               TEXT NOT NULL,
+    'oid'               INTEGER NOT NULL,
     'count'             INTEGER NOT NULL,   -- Times this same item is ordered by the online order
     PRIMARY KEY('name', 'oid'),
     CONSTRAINT fk_on_order_item_name FOREIGN KEY ('name') REFERENCES 'menu_item'('name'),

@@ -20,9 +20,10 @@
 - Copy the restaurant_db file into the config directory
 - export TMPDIR=/data/home/root/tmp/db
 - cd /
-- cd /data/home/root/tmp
 - cd /etc/mm/sql
+    - if this directory doesn't exist, create it with mkdir from the deepest subdirectory
 - Copy the schema.sql file into the sql directory
+- cd /data/home/root/tmp
 - sqlite3 restaurant_db
     - cntrl + c to exit sqlite3
     - there should be a restaurant_db file made in the current directory
@@ -37,4 +38,4 @@
 ## Optional: Check if database exists using QDBC
 - On windows, visit: C:\Users<your_user>\qnx710\target\qnx7\x86_64\usr\bin
 - Copy the "qdbc" file into your vms /system/xbin directory
-- qdbc -d /pps/qnx/qdb/config/restaurant_db
+- qdbc -d /data/home/root/tmp/restaurant_db
