@@ -4,9 +4,16 @@
 ### For QDB:
 - On windows, visit: C:\Users<your_user>\qnx710\target\qnx7\x86_64\usr\sbin
 - Copy the "qdb" file into your vms /system/xbin directory
+- On windows, visit C:\Users\<your_username>\qnx710\target\qnx7\x86_64\usr\lib
+- Copy the "libqdb.so" and "libqdb.so.1" files to your vms /system/lib directory
+
+### Fixing the makefile to include qdb.h
+- In the makefile, add a variable LIBS = -lqdb
+- Append the $(LIBS) to the CFLAGS 
+    - Might look something like: CFLAGS += $(DEBUG) $(TARGET) $(LIBS) -Wall
 
 ### For libraries for sqlite3:
-- On windows, visit: C:\Users<your_user>\qnx710\target\qnx7\x86_64\usr\lib
+- On windows, visit: C:\Users<your_username>\qnx710\target\qnx7\x86_64\usr\lib
 - Copy the "libsqlite3.so.1" file into your vms /system/lib directory
 - Copy the "libstrm.so.1" file into your vms /system/lib directory
 - Copy the "libicui18n.so.67" file into your vms /system/lib directory
@@ -14,11 +21,13 @@
 - Copy the "libicudata.so.67" file into your vms /system/lib directory
 
 ## Create directories to store database files and schema file
-- Start in root:
+- On the vm terminal:
+- cd /
 - cd pps
 - mkdir -p qnx/qdb/config
 - Copy the restaurant_db file into the config directory
 - export TMPDIR=/data/home/root/tmp
+    - If you ever power off the vm you need to repeat this
 - cd /
 - cd /etc/mm/sql
     - if this directory doesn't exist, create it with mkdir from the deepest subdirectory
@@ -31,7 +40,7 @@
     - it will use the config file under /pps/qnx/qdb/config
 
 ## Optional: Check if database works using QDBC
-- On windows, visit: C:\Users<your_user>\qnx710\target\qnx7\x86_64\usr\bin
+- On windows, visit: C:\Users<your_username>\qnx710\target\qnx7\x86_64\usr\bin
 - Copy the "qdbc" file into your vms /system/xbin directory
 - cd /
 - cd /pps/qnx/qdb/config

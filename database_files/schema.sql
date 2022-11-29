@@ -21,13 +21,16 @@ CREATE TABLE IF NOT EXISTS 'table' (
 -- These may be deleted at the end of the their date day
 CREATE TABLE IF NOT EXISTS 'reservation'(
     'id'                INTEGER PRIMARY KEY,  -- This should prevent using deleted reservation's ids
-    'table_num'      INTEGER NOT NULL,
+    'table_num'         INTEGER NOT NULL,
     'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM" format
     'first_name'        TEXT NOT NULL,
     'last_name'         TEXT NOT NULL,
     'phone_num'         INTEGER NOT NULL,
-    'start_time'        TEXT NOT NULL,      -- "HH:MM"
-    'duration'          INTEGER NOT NULL,   -- "HH:MM"
+    --'start_time'        TEXT NOT NULL,      -- "HH:MM"
+    'start_hour'        INTEGER NOT NULL,
+    'start_min'         INTEGER NOT NULL,
+    'end_hour'          INTEGER NOT NULL,
+    'end_min'           INTEGER NOT NULL,   -- "HH:MM"
     CONSTRAINT fk_reservation_table_number FOREIGN KEY ('table_num') REFERENCES 'table'('table_num')
 );
 
