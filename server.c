@@ -5,6 +5,7 @@
 #include <sys/iofunc.h>
 #include <sys/dispatch.h>
 #include "server.h"
+#include "dbfuncs.h"
 #include <string.h>
 
 typedef union
@@ -72,6 +73,23 @@ online_order_t online_orders_future[MAX_ONLINE_ORDERS];
 int num_online_orders_future = 0;
 
 int main(void) {
+
+	//Connect to database
+	//the hdl can be passed to dbfuncs to access the opened connection
+	qdb_hdl_t* hdl;
+	hdl = qdb_connect(DB_NAME, QDB_CONN_DFLT_SHARE);
+	if (hdl == NULL) {
+		perror("qdb_connect");
+	}
+
+//	char test_tag[] = "corner";
+//  int rc;
+//	rc = test_insert(hdl, test_tag);
+//	if (rc < 0){
+//		perror("test_insert");
+//	}
+//	printf("test_insert returned: %d\n", rc);
+//	return 0;
 
 	//sean's variables
 	name_attach_t *attach;

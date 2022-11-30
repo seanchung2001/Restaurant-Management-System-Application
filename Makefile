@@ -6,6 +6,7 @@
 DEBUG = -g
 CC = qcc
 LD = qcc
+LIBS = -lqdb
 
 
 TARGET = -Vgcc_ntox86_64
@@ -14,7 +15,7 @@ TARGET = -Vgcc_ntox86_64
 #TARGET = -Vgcc_ntoaarch64le
 
 
-CFLAGS += $(DEBUG) $(TARGET) -Wall
+CFLAGS += $(DEBUG) $(TARGET) $(LIBS) -Wall
 LDFLAGS+= $(DEBUG) $(TARGET)
 BINS = client server
 all: $(BINS)
@@ -24,6 +25,6 @@ clean:
 #	cd solutions; make clean
 
 
-server.o: server.c server.h
-client.o: client.c server.h
+#server.o: server.c server.h
+#client.o: client.c server.h
 
