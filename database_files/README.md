@@ -60,3 +60,9 @@
 - Enter: PRAGMA foreign_keys = ON;
 - Enter: PRAGMA foreign_keys;
     - should return 1 in a row to show it is turned on
+
+## Oddities with querying
+- the WHERE clause should have column names that are defined in ' ' without them 
+    - For example, 'table' schema has 'table_num'
+    - SELECT * FROM 'TABLE' WHERE 'table_num'=1; does not work
+    - SELECT * FROM 'TABLE' WHERE table_num=1; does work
