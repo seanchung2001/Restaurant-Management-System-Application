@@ -21,14 +21,17 @@ CREATE TABLE IF NOT EXISTS 'table' (
 -- These may be deleted at the end of the their date day
 CREATE TABLE IF NOT EXISTS 'reservation'(
     'id'                INTEGER PRIMARY KEY,  -- This should prevent using deleted reservation's ids
-    'table_number'      INTEGER NOT NULL,
+    'table_num'         INTEGER NOT NULL,
     'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM" format
     'first_name'        TEXT NOT NULL,
     'last_name'         TEXT NOT NULL,
     'phone_num'         INTEGER NOT NULL,
-    'start_time'        TEXT NOT NULL,      -- "HH:MM"
-    'duration'          INTEGER NOT NULL,   -- "HH:MM"
-    CONSTRAINT fk_reservation_table_number FOREIGN KEY ('table_number') REFERENCES 'table'('table_num')
+    --'start_time'        TEXT NOT NULL,      -- "HH:MM"
+    'start_hour'        INTEGER NOT NULL,
+    'start_min'         INTEGER NOT NULL,
+    'end_hour'          INTEGER NOT NULL,
+    'end_min'           INTEGER NOT NULL,   -- "HH:MM"
+    CONSTRAINT fk_reservation_table_number FOREIGN KEY ('table_num') REFERENCES 'table'('table_num')
 );
 
 CREATE TABLE IF NOT EXISTS 'meta_tag'(
@@ -55,7 +58,9 @@ CREATE TABLE IF NOT EXISTS 'online_order' (
 CREATE TABLE IF NOT EXISTS 'table_order' (
     'id'                INTEGER PRIMARY KEY,
     'total'             REAL NOT NULL,      -- Floating point
-    'date'              TEXT NOT NULL       -- "YYYY-MM-DD HH:MM"
+    'date'              TEXT NOT NULL,       -- "YYYY-MM-DD HH:MM"
+    'table_num'         INTEGER NOT NULL,
+    CONSTRAINT fk_table_order_table_number FOREIGN KEY ('table_num') REFERENCES 'table'('table_num')
 );
 
 --START OF THE RELATIONAL TABLES
@@ -65,7 +70,7 @@ CREATE TABLE IF NOT EXISTS 'table_order' (
 
 -- Represents the tags associated with a table
 CREATE TABLE IF NOT EXISTS 'table_tag'(
-    'table_num'         TEXT NOT NULL,
+    'table_num'         INTEGER NOT NULL,
     'name'              TEXT NOT NULL,
     PRIMARY KEY('table_num', 'name'),
     CONSTRAINT fk_table_tag_table_num FOREIGN KEY ('table_num') REFERENCES 'table'('table_num'),
@@ -74,7 +79,7 @@ CREATE TABLE IF NOT EXISTS 'table_tag'(
 
 CREATE TABLE IF NOT EXISTS 'on_order_item'(
     'name'              TEXT NOT NULL,
-    'oid'               TEXT NOT NULL,
+    'oid'               INTEGER NOT NULL,
     'count'             INTEGER NOT NULL,   -- Times this same item is ordered by the online order
     PRIMARY KEY('name', 'oid'),
     CONSTRAINT fk_on_order_item_name FOREIGN KEY ('name') REFERENCES 'menu_item'('name'),
@@ -83,7 +88,7 @@ CREATE TABLE IF NOT EXISTS 'on_order_item'(
 
 CREATE TABLE IF NOT EXISTS 'tab_order_item'(
     'name'              TEXT NOT NULL,
-    'oid'               TEXT NOT NULL,
+    'oid'               INTEGER NOT NULL,
     'count'             INTEGER NOT NULL,   -- Times this same item is ordered by the online order
     PRIMARY KEY('name', 'oid'),
     CONSTRAINT fk_on_order_item_name FOREIGN KEY ('name') REFERENCES 'menu_item'('name'),
