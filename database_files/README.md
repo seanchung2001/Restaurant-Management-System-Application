@@ -29,13 +29,11 @@
 
 ## Create directories to store database files and schema file
 - On the vm terminal:
-- cd /
-- cd pps
+- cd /pps
 - mkdir -p qnx/qdb/config
 - Copy the restaurant_db file into the config directory
 - export TMPDIR=/data/home/root/tmp
     - If you ever power off the vm you need to repeat this
-- cd /
 - cd /etc/mm/sql
     - if this directory doesn't exist, create it with mkdir from the deepest subdirectory
 - Copy the schema.sql file into the sql directory
@@ -46,13 +44,19 @@
 - to start the server
     - it will use the config file under /pps/qnx/qdb/config
 
-## Optional: Check if database works using QDBC
+## Check if database works using QDBC and turn on foreign key constraints
 - On windows, visit: C:\Users<your_username>\qnx710\target\qnx7\x86_64\usr\bin
 - Copy the "qdbc" file into your vms /system/xbin directory
-- cd /
 - cd /pps/qnx/qdb/config
 - qdbc -d restaurant_db
 - Should be able to issue sql commands now into the tables defined by the schema
     - Can try: INSERT INTO 'table' ('table_num', 'seat_num', 'isReserved') VALUES (1,5,0);
     - SELECT * FROM 'table';
     - DELETE FROM 'table' WHERE table_num=1;
+
+### Turn on foreign key constraints
+- cd /pps/qnx/qdb/config
+- qdbc -d restaurant_db
+- Enter: PRAGMA foreign_keys = ON;
+- Enter: PRAGMA foreign_keys;
+    - should return 1 in a row to show it is turned on
