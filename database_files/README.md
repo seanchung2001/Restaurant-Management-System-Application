@@ -1,5 +1,12 @@
 # Database Setup
 
+## Get a vm with enough space in /system
+- Create a new vm target in qnx
+- Select your vm platform
+- Select x86_64 for the CPU
+- in Extra Options add: --sys-size=420
+- Finish
+
 ## Get the required executables and libraries for qdb to work
 ### For QDB:
 - On windows, visit: C:\Users<your_user>\qnx710\target\qnx7\x86_64\usr\sbin
