@@ -99,21 +99,23 @@ int insert_menu_item(qdb_hdl_t* hdl, menu_item_t* m);
  * @params
  * hdl: database handle returned by qdb_connect()
  * o: the structure with the fields for the order
+ * id: out parameter with the id of the new order in the database
  * @returns
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int insert_online_order(qdb_hdl_t* hdl, online_order_t* o);
+int insert_online_order(qdb_hdl_t* hdl, online_order_t* o, int* id);
 
 /* Creates a new table order
  * @params
  * hdl: database handle returned by qdb_connect()
  * t: the structure with the fields for the order
+ * id: out parameter with the id of the new order in the database
  * @returns
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int insert_table_order(qdb_hdl_t* hdl, table_order_receipt_t* t);
+int insert_table_order(qdb_hdl_t* hdl, table_order_receipt_t* t,  int* id);
 
 /* Creates a new table tag relation for a table
  * @params
@@ -242,6 +244,7 @@ int query_tables(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int nu
 
 //++++++++++++++++++ Implementations ++++++++++++++++++
 
+
 //For testing insertions
 void testprofile(qdb_hdl_t* hdl){
 	int rc;
@@ -258,7 +261,7 @@ void testprofile(qdb_hdl_t* hdl){
 		perror("insert_profile");
 		return;
 	}
-
+	printf("Success: insert_profile\n");
 }
 
 void testlogin(qdb_hdl_t* hdl){
@@ -268,6 +271,7 @@ void testlogin(qdb_hdl_t* hdl){
 		perror("login_profile");
 		return;
 	}
+	printf("Success: login_profile\n");
 }
 
 void testtable(qdb_hdl_t* hdl){
@@ -281,6 +285,7 @@ void testtable(qdb_hdl_t* hdl){
 		perror("insert_table");
 		return;
 	}
+	printf("Success: insert_table\n");
 }
 
 void testtable2(qdb_hdl_t* hdl){
@@ -290,6 +295,7 @@ void testtable2(qdb_hdl_t* hdl){
 		perror("update_table");
 		return;
 	}
+	printf("Success: update_table");
 }
 
 void testreservation(qdb_hdl_t* hdl){
@@ -312,6 +318,7 @@ void testreservation(qdb_hdl_t* hdl){
 		perror("insert_reservation");
 		return;
 	}
+	printf("Success: insert_reservation\n");
 }
 
 void testmetatag(qdb_hdl_t* hdl){
@@ -321,6 +328,7 @@ void testmetatag(qdb_hdl_t* hdl){
 		perror("insert_meta_tag");
 		return;
 	}
+	printf("Success: insert_meta_tag\n");
 }
 
 void testmenuitem(qdb_hdl_t* hdl){
@@ -336,10 +344,12 @@ void testmenuitem(qdb_hdl_t* hdl){
 		perror("insert_menu_item");
 		return;
 	}
+	printf("Success: insert_menu_item\n");
 }
 
 void testonlineorder(qdb_hdl_t* hdl){
 	int rc;
+	int id = -1;
 	online_order_t o;
 	o.year = 2022;
 	o.month = 12;
@@ -352,16 +362,17 @@ void testonlineorder(qdb_hdl_t* hdl){
 	strcpy(o.address, "fake add");
 	o.phone_num = 12345;
 
-	rc = insert_online_order(hdl, &o);
-	if (rc < 0){
+	rc = insert_online_order(hdl, &o, &id);
+	if (rc < 0 || id < 0){
 		perror("insert_online_order");
 		return;
 	}
-	printf("Success: insert_online_order\n");
+	printf("Success: insert_online_order with id: %d\n", id);
 }
 
 void testtableorder(qdb_hdl_t* hdl){
 	int rc;
+	int id = -1;
 	table_order_receipt_t t;
 	t.total = 6.40;
 	t.year = 2022;
@@ -369,12 +380,12 @@ void testtableorder(qdb_hdl_t* hdl){
 	t.day = 1;
 	t.table_num = 12;
 
-	rc = insert_table_order(hdl, &t);
-	if (rc < 0){
+	rc = insert_table_order(hdl, &t, &id);
+	if (rc < 0 || id < 0){
 		perror("insert_table_order");
 		return;
 	}
-	printf("Success: insert_table_order\n");
+	printf("Success: insert_table_order with id: %d\n", id);
 }
 
 void testtabletag(qdb_hdl_t* hdl){
@@ -409,10 +420,12 @@ void testtaborderitem(qdb_hdl_t* hdl){
 	printf("Success: insert_tab_order_item\n");
 }
 
+//Don't use this
+//void testdbfuncs(qdb_hdl_t* hdl){
+//	testtaborderitem(hdl);
+//}
+
 //++++++++++++++++++ INSERTS ++++++++++++++++++
-int _test_insert(qdb_hdl_t* hdl, char *str){
-	return qdb_statement(hdl, "INSERT INTO 'META_TAG' VALUES ('%q');", str);
-}
 
 int insert_profile(qdb_hdl_t* hdl, profile_t* profile){
 	return qdb_statement(hdl, "INSERT INTO 'PROFILE' VALUES ('%q','%q','%q','%q','%q','%q','%q');", profile->restaurant_name, profile->address, profile->description, profile->opens, profile->closes, profile->login, profile->password);
@@ -466,12 +479,44 @@ int insert_menu_item(qdb_hdl_t* hdl, menu_item_t* m){
 	return qdb_statement(hdl, "INSERT INTO 'MENU_ITEM' VALUES ('%q','%q',%f,'%q');", m->name, m->description, m->price, m->type);
 }
 
-int insert_online_order(qdb_hdl_t* hdl, online_order_t* o){
-	return qdb_statement(hdl, "INSERT INTO 'ONLINE_ORDER' ('year','month','day','hour','min','total','first_name','last_name','address','phone_num') VALUES (%d,%d,%d,%d,%d,%f,'%q','%q','%q',%d);",(int)o->year,(int)o->month,(int)o->day,(int)o->hour,(int)o->minute,o->total,o->first_name,o->last_name,o->address,(int)o->phone_num);
+int insert_online_order(qdb_hdl_t* hdl, online_order_t* o, int* id){
+	int rc;
+	void* cr;
+	qdb_result_t* res;
+	rc = qdb_statement(hdl, "INSERT INTO 'ONLINE_ORDER' ('year','month','day','hour','min','total','first_name','last_name','address','phone_num') VALUES (%d,%d,%d,%d,%d,%f,'%q','%q','%q',%d);",(int)o->year,(int)o->month,(int)o->day,(int)o->hour,(int)o->minute,o->total,o->first_name,o->last_name,o->address,(int)o->phone_num);
+	if (rc < 0) return -1;
+
+	//Retrieve the last id of the order that was just inserted
+	rc = qdb_statement(hdl, "SELECT last_insert_rowid();");
+	if (rc < 0) return -1;
+	res = qdb_getresult(hdl);
+	if (res == NULL) return -1;
+	//Zero based matrix of rows * columns
+	cr = qdb_cell(res,0,0);
+	if (cr == NULL) return -1;
+	*id = *(int*) cr;
+	if (id == NULL) return -1;
+	return 0;
 }
 
-int insert_table_order(qdb_hdl_t* hdl, table_order_receipt_t* t){
-	return qdb_statement(hdl, "INSERT INTO 'TABLE_ORDER' ('total','year','month','day','table_num') VALUES (%f,%d,%d,%d,%d);",(int)t->total,(int)t->year,(int)t->month,(int)t->day,(int)t->table_num);
+int insert_table_order(qdb_hdl_t* hdl, table_order_receipt_t* t, int* id){
+	int rc;
+	void* cr;
+	qdb_result_t* res;
+	rc = qdb_statement(hdl, "INSERT INTO 'TABLE_ORDER' ('total','year','month','day','table_num') VALUES (%f,%d,%d,%d,%d);",t->total,(int)t->year,(int)t->month,(int)t->day,(int)t->table_num);
+	if (rc < 0) return -1;
+
+	//Retrieve the last id of the order that was just inserted
+	rc = qdb_statement(hdl, "SELECT last_insert_rowid();");
+	if (rc < 0) return -1;
+	res = qdb_getresult(hdl);
+	if (res == NULL) return -1;
+	//Zero based matrix of rows * columns
+	cr = qdb_cell(res,0,0);
+	if (cr == NULL) return -1;
+	*id = *(int*) cr;
+	if (id == NULL) return -1;
+	return 0;
 }
 
 int insert_table_tag(qdb_hdl_t* hdl, int table_num, char* name){
