@@ -66,3 +66,17 @@
     - For example, 'table' schema has 'table_num'
     - SELECT * FROM 'TABLE' WHERE 'table_num'=1; does not work
     - SELECT * FROM 'TABLE' WHERE table_num=1; does work
+   
+## Re-initializing database in case of schema changes
+- slay qdb 
+- slay pps
+- check if /dev/qdb/restaurant_db exists, if so remove it 
+- cd /pps/qnx/qdb/config
+- rm restaurant_db
+- cd /etc/mm/sql
+- rm schema.sql
+- Copy the restaurant_db config file back to /pps/qnx/qdb/config
+- Copy the schema.sql back to /etc/mm/sql
+- cd /pps/qnx/qdb/config
+- qdb
+- qdbc -d restaurant_db to check if it works
