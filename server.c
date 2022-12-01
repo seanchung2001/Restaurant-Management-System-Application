@@ -82,15 +82,6 @@ int main(void) {
 		perror("qdb_connect");
 	}
 
-//	char test_tag[] = "corner";
-//  int rc;
-//	rc = _test_insert(hdl, test_tag);
-//	if (rc < 0){
-//		perror("test_insert");
-//	}
-//	printf("test_insert returned: %d\n", rc);
-//	return 0;
-
 	//sean's variables
 	name_attach_t *attach;
 	int rcvid;
