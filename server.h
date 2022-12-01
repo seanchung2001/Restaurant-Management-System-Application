@@ -38,23 +38,23 @@
 typedef struct recv_msg_reservation {
 	uint16_t type;
 	struct _pulse pulse;
-	uint16_t num_people;  //required
+	int num_people;  //required
 	char table_meta_tag[MAX_STRING_LEN+1];
-	uint16_t year; //required
-	uint16_t month; //required
-	uint16_t day; //required
+	int year; //required
+	int month; //required
+	int day; //required
 	char first_name[MAX_STRING_LEN+1]; //required
 	char last_name[MAX_STRING_LEN+1]; //required
-	char phone_num[MAX_STRING_LEN+1]; //required
-	uint16_t start_hour; //required
-	uint16_t start_min; //required
-	uint16_t end_hour; //required
-	uint16_t end_min;
+	int phone_num; //required
+	int start_hour; //required
+	int start_min; //required
+	int end_hour; //required
+	int end_min;
 } recv_msg_reservation_t;
 
 typedef struct resp_msg_reservation {
-	uint16_t table_num;
-	uint16_t reservationID;
+	int table_num;
+	int reservationID;
 }resp_msg_reservation_t;
 
 //order number might be required
@@ -62,19 +62,19 @@ typedef struct recv_msg_online_order {
 	uint16_t type;
 	struct _pulse pulse;
 	char menu_items[MAX_ONLINE_ORDER_ITEMS][MAX_STRING_LEN+1];//menu should be a string, items separated by a comma only (no space)
-	uint16_t year;
-	uint16_t month;
-	uint16_t day;
-	uint16_t hour;
-	uint16_t minutes;
+	int year;
+	int month;
+	int day;
+	int hour;
+	int minutes;
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
 	char address[MAX_STRING_LEN+1];
-	char phone_num[MAX_STRING_LEN+1];
+	int phone_num;
 } recv_msg_online_order_t;
 
 typedef struct resp_msg_online_order {
-	uint16_t orderID;
+	int orderID;
 	float total;
 }resp_msg_online_order_t;
 
@@ -84,25 +84,25 @@ typedef struct recv_msg_table_order {
 	uint16_t type;
 	struct _pulse pulse;
 	char menu_items[MAX_TABLE_ORDER_ITEMS][MAX_STRING_LEN+1];//menu should be a string, items separated by a comma only (no space)
-	uint16_t table_num;
+	int table_num;
 } recv_msg_table_order_t;
 
 typedef struct recv_get_table_in_house {
 	uint16_t type;
 	struct _pulse pulse;
-	uint16_t num_people;
+	int num_people;
 	//we can add a string for meta tags if we want to allow that later
 }recv_get_table_in_house_t;
 
 typedef struct recv_table_print_receipt {
 	uint16_t type;
 	struct _pulse pulse;
-	uint16_t table_num;
+	int table_num;
 }recv_table_print_receipt_t;
 
 typedef struct resp_table_print_receipt {
-	uint16_t orderID;
-	uint16_t table_num;
+	int orderID;
+	int table_num;
 	float total;
 }resp_table_print_receipt_t;
 
@@ -117,9 +117,9 @@ typedef struct profile {
 }profile_t;
 
 typedef struct table {
-	uint16_t table_num;
-	uint16_t num_seats;
-	uint16_t isReserved;
+	int table_num;
+	int num_seats;
+	int isReserved;
 }table_t;
 
 typedef struct menu_items {
@@ -127,26 +127,26 @@ typedef struct menu_items {
 	char description[MAX_STRING_LEN+1];
 	char type[MAX_STRING_LEN+1];
 	float price;
-	uint16_t count;
+	int count;
 }menu_item_t;
 
 typedef struct table_order_item {
 	char menu_item_name[MAX_STRING_LEN+1];
-	uint16_t order_id;
-	uint16_t count;
-	uint16_t table_num;
-	uint16_t isComplete;  //Whether the client has paid with print receipt 0 for no, 1 for yes
+	int order_id;
+	int count;
+	int table_num;
+	int isComplete;  //Whether the client has paid with print receipt 0 for no, 1 for yes
 }table_order_item_t;
 
 typedef struct online_order_item {
 	char menu_item_name[MAX_STRING_LEN+1];
-	uint16_t orderID;
-	uint16_t count;
+	int orderID;
+	int count;
 }online_order_item_t;
 
 //for table order receipt printing
 typedef struct table_order_receipt {
-	uint16_t orderID;
+	int orderID;
 	float total;
 	int year;
 	int month;
@@ -155,40 +155,38 @@ typedef struct table_order_receipt {
 }table_order_receipt_t;
 
 typedef struct online_order {
-	uint16_t id;
-	uint16_t year;
-	uint16_t month;
-	uint16_t day;
-	uint16_t hour;
-	uint16_t minute;
+	int id;
+	int year;
+	int month;
+	int day;
+	int hour;
+	int minute;
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
 	char address[MAX_STRING_LEN+1];
-	char phoneNum[MAX_STRING_LEN+1];
 	int phone_num;
 	float total;
 }online_order_t;
 
 //For reservations
 typedef struct reservations {
-	uint16_t id;
-	uint16_t table_num;
-	uint16_t year;
-	uint16_t month;
-	uint16_t day;
+	int id;
+	int table_num;
+	int year;
+	int month;
+	int day;
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
-	char phoneNum[MAX_STRING_LEN+1];
 	int phone_num;
-	uint16_t start_hour;
-	uint16_t start_min;
-	uint16_t end_hour;
-	uint16_t end_min;
-	uint16_t status; //0=not complete, 1=ongoing, 2=complete
+	int start_hour;
+	int start_min;
+	int end_hour;
+	int end_min;
+	int status; //0=not complete, 1=ongoing, 2=complete
 }reservations_t;
 
 typedef struct table_tag {
-	uint16_t table_num;
+	int table_num;
 	char meta_tag_name[MAX_STRING_LEN+1]; //window, bar, outdoors, party size, couple seats (two seats for couples), etc.
 }table_tag_t;
 

@@ -20,8 +20,8 @@ typedef union
 } recv_buf_t;
 
 //Function forward declaration
-int create_reservation(int num_seats, char *meta_tag, int year, int month, int day, char *fName, char *lName, char *phoneNum, int start_hour, int start_min, int duration_hour, int duration_min, int curYear, int curMonth, int curDay, int resID);
-float create_online_order(int year, int month, int day, int hour, int minute, char *fName, char *lName, char *address, char *phoneNum, int curYear, int curMonth, int curDay, int orderID);
+int create_reservation(int num_seats, char *meta_tag, int year, int month, int day, char *fName, char *lName, int phoneNum, int start_hour, int start_min, int duration_hour, int duration_min, int curYear, int curMonth, int curDay, int resID);
+float create_online_order(int year, int month, int day, int hour, int minute, char *fName, char *lName, char *address, int phoneNum, int curYear, int curMonth, int curDay, int orderID);
 int create_table_order(int table_num, int orderID);
 int get_table_in_house(int num_people);
 float table_print_receipt(int table_num);
@@ -354,6 +354,7 @@ int main(void) {
 						tmpTable_receipt.year = calculate_current_year(dateTime.tm_year);
 						tmpTable_receipt.month = calculate_current_month(dateTime.tm_mon);
 						tmpTable_receipt.day = dateTime.tm_mday;
+						tmpTable_receipt.table_num = client_msg.print_receipt.table_num;
 						table_order_receipts[num_table_receipts++] = tmpTable_receipt;
 
 						//Set the table to not reserved
@@ -384,7 +385,7 @@ int main(void) {
 return 0;
 }
 //Check if it is in the future
-int create_reservation(int num_seats, char *meta_tag, int year, int month, int day, char *fName, char *lName, char *phoneNum, int start_hour, int start_min, int duration_hour, int duration_min, int curYear, int curMonth, int curDay, int resID)
+int create_reservation(int num_seats, char *meta_tag, int year, int month, int day, char *fName, char *lName, int phoneNum, int start_hour, int start_min, int duration_hour, int duration_min, int curYear, int curMonth, int curDay, int resID)
 {
 	int cpyNumSeats = num_seats;
 	int found_table = 0;
@@ -439,7 +440,7 @@ int create_reservation(int num_seats, char *meta_tag, int year, int month, int d
 		tmpReservation.id = resID;
 		strcpy(tmpReservation.last_name, lName);
 		tmpReservation.month = month;
-		strcpy(tmpReservation.phoneNum, phoneNum);
+		tmpReservation.phone_num = phoneNum;
 		tmpReservation.start_hour = start_hour;
 		tmpReservation.start_min = start_min;
 		tmpReservation.status = 0;
@@ -496,7 +497,7 @@ int create_reservation(int num_seats, char *meta_tag, int year, int month, int d
 		strcpy(tmpReservation.first_name, fName);
 		strcpy(tmpReservation.last_name, lName);
 		tmpReservation.month = month;
-		strcpy(tmpReservation.phoneNum, phoneNum);
+		tmpReservation.phone_num = phoneNum;
 		tmpReservation.start_hour = start_hour;
 		tmpReservation.start_min = start_min;
 		tmpReservation.status = 0;
@@ -508,7 +509,7 @@ int create_reservation(int num_seats, char *meta_tag, int year, int month, int d
 	return found_table;
 }
 
-float create_online_order(int year, int month, int day, int hour, int minute, char *fName, char *lName, char *address, char *phoneNum, int curYear, int curMonth, int curDay, int orderID)
+float create_online_order(int year, int month, int day, int hour, int minute, char *fName, char *lName, char *address, int phoneNum, int curYear, int curMonth, int curDay, int orderID)
 {
 	float total = 0;
 	//Error check for seeing if the online order made is before the current day (invalid)
@@ -542,7 +543,7 @@ float create_online_order(int year, int month, int day, int hour, int minute, ch
 	strcpy(makeOnlineOrder.last_name, lName);
 	makeOnlineOrder.minute = minute;
 	makeOnlineOrder.month = month;
-	strcpy(makeOnlineOrder.phoneNum, phoneNum);
+	makeOnlineOrder.phone_num = phoneNum;
 	makeOnlineOrder.year = year;
 	makeOnlineOrder.total = total;
 
