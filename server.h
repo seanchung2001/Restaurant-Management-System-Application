@@ -151,6 +151,7 @@ typedef struct table_order_receipt {
 	int year;
 	int month;
 	int day;
+	int table_num;
 }table_order_receipt_t;
 
 typedef struct online_order {
@@ -164,6 +165,7 @@ typedef struct online_order {
 	char last_name[MAX_STRING_LEN+1];
 	char address[MAX_STRING_LEN+1];
 	char phoneNum[MAX_STRING_LEN+1];
+	int phone_num;
 	float total;
 }online_order_t;
 
@@ -177,6 +179,7 @@ typedef struct reservations {
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
 	char phoneNum[MAX_STRING_LEN+1];
+	int phone_num;
 	uint16_t start_hour;
 	uint16_t start_min;
 	uint16_t end_hour;

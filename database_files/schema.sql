@@ -22,7 +22,10 @@ CREATE TABLE IF NOT EXISTS 'table' (
 CREATE TABLE IF NOT EXISTS 'reservation'(
     'id'                INTEGER PRIMARY KEY,  -- This should prevent using deleted reservation's ids
     'table_num'         INTEGER NOT NULL,
-    'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM" format
+    --'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM" format
+    'year'              INTEGER NOT NULL,
+    'month'             INTEGER NOT NULL,
+    'day'               INTEGER NOT NULL,
     'first_name'        TEXT NOT NULL,
     'last_name'         TEXT NOT NULL,
     'phone_num'         INTEGER NOT NULL,
@@ -47,7 +50,12 @@ CREATE TABLE IF NOT EXISTS 'menu_item'(
 
 CREATE TABLE IF NOT EXISTS 'online_order' (
     'id'                INTEGER PRIMARY KEY,
-    'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM"
+    --'date'              TEXT NOT NULL,      -- "YYYY-MM-DD HH:MM"
+    'year'              INTEGER NOT NULL,
+    'month'             INTEGER NOT NULL,
+    'day'               INTEGER NOT NULL,
+    'hour'              INTEGER NOT NULL,
+    'min'               INTEGER NOT NULL,
     'total'             REAL NOT NULL,      -- Floating point 
     'first_name'        TEXT NOT NULL,
     'last_name'         TEXT NOT NULL,
@@ -58,7 +66,10 @@ CREATE TABLE IF NOT EXISTS 'online_order' (
 CREATE TABLE IF NOT EXISTS 'table_order' (
     'id'                INTEGER PRIMARY KEY,
     'total'             REAL NOT NULL,      -- Floating point
-    'date'              TEXT NOT NULL,       -- "YYYY-MM-DD HH:MM"
+    --'date'              TEXT NOT NULL,       -- "YYYY-MM-DD HH:MM"
+    'year'              INTEGER NOT NULL,
+    'month'             INTEGER NOT NULL,
+    'day'               INTEGER NOT NULL,
     'table_num'         INTEGER NOT NULL,
     CONSTRAINT fk_table_order_table_number FOREIGN KEY ('table_num') REFERENCES 'table'('table_num')
 );

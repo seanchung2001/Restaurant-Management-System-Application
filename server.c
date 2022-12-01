@@ -84,7 +84,7 @@ int main(void) {
 
 //	char test_tag[] = "corner";
 //  int rc;
-//	rc = test_insert(hdl, test_tag);
+//	rc = _test_insert(hdl, test_tag);
 //	if (rc < 0){
 //		perror("test_insert");
 //	}
