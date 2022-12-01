@@ -1,4 +1,8 @@
 #include <sys/iomsg.h>
+#include <qdb/qdb.h>
+
+#ifndef SERVER_H_
+#define SERVER_H_
 
 #define SERVER_NAME "rmsa" //use this as the name to register in the pathname space to create and connect to the channel
 
@@ -102,6 +106,16 @@ typedef struct resp_table_print_receipt {
 	float total;
 }resp_table_print_receipt_t;
 
+typedef struct profile {
+	char restaurant_name[MAX_STRING_LEN+1];
+	char address[MAX_STRING_LEN+1];
+	char description[MAX_STRING_LEN+1];
+	char opens[MAX_STRING_LEN+1];
+	char closes[MAX_STRING_LEN+1];
+	char login[MAX_STRING_LEN+1];
+	char password[MAX_STRING_LEN+1];
+}profile_t;
+
 typedef struct table {
 	uint16_t table_num;
 	uint16_t num_seats;
@@ -137,6 +151,7 @@ typedef struct table_order_receipt {
 	int year;
 	int month;
 	int day;
+	int table_num;
 }table_order_receipt_t;
 
 typedef struct online_order {
@@ -150,6 +165,7 @@ typedef struct online_order {
 	char last_name[MAX_STRING_LEN+1];
 	char address[MAX_STRING_LEN+1];
 	char phoneNum[MAX_STRING_LEN+1];
+	int phone_num;
 	float total;
 }online_order_t;
 
@@ -163,6 +179,7 @@ typedef struct reservations {
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
 	char phoneNum[MAX_STRING_LEN+1];
+	int phone_num;
 	uint16_t start_hour;
 	uint16_t start_min;
 	uint16_t end_hour;
@@ -174,3 +191,6 @@ typedef struct table_tag {
 	uint16_t table_num;
 	char meta_tag_name[MAX_STRING_LEN+1]; //window, bar, outdoors, party size, couple seats (two seats for couples), etc.
 }table_tag_t;
+
+
+#endif /* SERVER_H_ */
