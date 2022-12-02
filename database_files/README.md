@@ -80,3 +80,13 @@
 - cd /pps/qnx/qdb/config
 - qdb
 - qdbc -d restaurant_db to check if it works
+
+## Re-starting VM if you closed momentics by accident and it powered off your vm
+- export TMPDIR=/data/home/root/tmp
+- Copy the restaurant_db config file back to /pps/qnx/qdb/config
+- qdb
+- cd /pps/qnx/qdb/config
+- qdbc -d restaurant_db
+- PRAGMA foreign_keys=ON;
+    - inside of qdbc prompt
+    - PRAGMA foreign_keys; to check if its turned on, should show a 1

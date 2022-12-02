@@ -242,6 +242,18 @@ int get_reservation(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, in
 int query_tables(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, int num_people);
 
 
+/* Retrieves the profile (profiles?) from the database.
+ * @params
+ * hdl: database handle returned by qdb_connect()
+ * res: the out param that will hold the result if it is found. Will be NULL if something went wrong
+ * rows: the out param that will hold the number of rows found. Will be 0 if no results. -1 if something went wrong
+ * cols: the out param that will hold the number of columns found Will be 0 if no results. -1 if something went wrong
+ * @returns
+ * >=0 if successful, represents profiles found (should be 1 but there's kind of no limit)
+ * -1 if unsuccessful, errno will be set
+ */
+int get_profile(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols);
+
 //++++++++++++++++++ Implementations ++++++++++++++++++
 
 
@@ -679,12 +691,25 @@ int get_tables_tags(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, in
 
 int query_tables(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, int num_people){
 	int rc;
-		//These will be properly set later unless something goes wrong
-		*rows = -1;
-		*cols = -1;
-		rc = qdb_statement(hdl,"SELECT * FROM 'TABLE' WHERE isReserved=0 AND seat_num>=%d ORDER BY seat_num ASC;", num_people);
-		if (rc < 0) return -1;
-		return process_result(hdl, res, rows, cols);
+	//These will be properly set later unless something goes wrong
+	*rows = -1;
+	*cols = -1;
+	rc = qdb_statement(hdl,"SELECT * FROM 'TABLE' WHERE isReserved=0 AND seat_num>=%d ORDER BY seat_num ASC;", num_people);
+	if (rc < 0) return -1;
+	return process_result(hdl, res, rows, cols);
+}
+
+int get_profile(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols){
+	int rc;
+	//These will be properly set later unless something goes wrong
+	*rows = -1;
+	*cols = -1;
+	rc = qdb_statement(hdl, "SELECT * FROM 'PROFILE';");
+	if (rc < 0) return -1;
+    if (process_result(hdl, res, rows, cols) == -1){
+    	return -1;
+    }
+    return *rows;
 }
 
 #endif /* DBFUNCS_H_ */
