@@ -162,7 +162,7 @@ int insert_tab_order_item(qdb_hdl_t* hdl, char* name, int oid, int count);
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int process_result(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols);
+int process_result(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols);
 
 /* Retrieves the tables from the database, saves into the out parameters
  * @params
@@ -174,7 +174,7 @@ int process_result(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols);
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int get_tables(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols);
+int get_tables(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols);
 
 /* Retrieves a tables tags from the database, saves into the out parameters
  * @params
@@ -188,7 +188,7 @@ int get_tables(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols);
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int get_tables_tags(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int table_num);
+int get_tables_tags(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, int table_num);
 
 
 /* Retrieves the menu items from the database, saves into the out parameters
@@ -201,7 +201,7 @@ int get_tables_tags(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int get_menu_items(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols);
+int get_menu_items(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols);
 
 /* Retrieves the reservations from the database, saves into the out parameters
  * @params
@@ -213,7 +213,7 @@ int get_menu_items(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols);
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int get_reservations(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols);
+int get_reservations(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols);
 
 /* Retrieves reservations for a given date from the database, saves into the out parameters
  * @params
@@ -225,7 +225,7 @@ int get_reservations(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols);
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int get_reservation(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int year, int month, int day);
+int get_reservation(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, int year, int month, int day);
 
 /* Retrieves tables given they're not reserved already and have the min number of people.
  * The results will be in ascending order based on seat_num
@@ -239,7 +239,7 @@ int get_reservation(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int
  * >=0 if successful
  * -1 if unsuccessful, errno will be set
  */
-int query_tables(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int num_people);
+int query_tables(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, int num_people);
 
 
 //++++++++++++++++++ Implementations ++++++++++++++++++
@@ -308,9 +308,9 @@ void testreservation(qdb_hdl_t* hdl){
 	strcpy(res.first_name, "John");
 	strcpy(res.last_name, "Joel");
 	res.phone_num = 123;
-	res.start_hour = 11;
+	res.start_hour = 13;
 	res.start_min = 30;
-	res.end_hour = 12;
+	res.end_hour = 14;
 	res.end_min = 30;
 
 	rc = insert_reservation(hdl, &res);
@@ -419,6 +419,80 @@ void testtaborderitem(qdb_hdl_t* hdl){
 	}
 	printf("Success: insert_tab_order_item\n");
 }
+
+void testgets(qdb_hdl_t* hdl){
+	int rc;
+	qdb_result_t* res;
+	int rows = -10;
+	int cols = -10;
+	//Get tables
+	rc = get_tables(hdl, &res, &rows, &cols);
+	if (rc < 0){
+		perror("get_tables");
+	}else{
+		printf("Success: get_tables with rows = %d and cols = %d\n",rows,cols);
+		printf("Res: rows = %d and cols = %d\n", qdb_rows(res),qdb_columns(res));
+	}
+	rows = -10;
+	cols = -10;
+
+	//Get menu
+	rc = get_menu_items(hdl, &res, &rows, &cols);
+	if (rc < 0){
+		perror("get_menu_items");
+	}else{
+		printf("Success: get_menu_items with rows = %d and cols = %d\n",rows,cols);
+		printf("Res: rows = %d and cols = %d\n", qdb_rows(res),qdb_columns(res));
+	}
+	rows = -10;
+	cols = -10;
+
+	//Get reservations
+	rc = get_reservations(hdl, &res, &rows, &cols);
+	if (rc < 0){
+		perror("get_reservations");
+	}else{
+		printf("Success: get_reservations with rows = %d and cols = %d\n",rows,cols);
+		printf("Res: rows = %d and cols = %d\n", qdb_rows(res),qdb_columns(res));
+	}
+	rows = -10;
+	cols = -10;
+
+	//Get reservation on day 2022 12 1
+	rc = get_reservation(hdl, &res, &rows, &cols, 2022, 12, 1);
+	if (rc < 0){
+		perror("get_reservation");
+	}else{
+		printf("Success: get_reservation with rows = %d and cols = %d\n",rows,cols);
+		printf("Res: rows = %d and cols = %d\n", qdb_rows(res),qdb_columns(res));
+	}
+	rows = -10;
+	cols = -10;
+
+	//Get a tables tags
+	rc = get_tables_tags(hdl, &res, &rows, &cols, 12);
+	if (rc < 0){
+		perror("get_tables_tags");
+	}else{
+		printf("Success: get_tables_tags with rows = %d and cols = %d\n",rows,cols);
+		printf("Res: rows = %d and cols = %d\n", qdb_rows(res),qdb_columns(res));
+	}
+	rows = -10;
+	cols = -10;
+
+	//Query tables
+	rc = query_tables(hdl, &res, &rows, &cols, 5);
+	if (rc < 0){
+		perror("query_tables");
+	}else{
+		printf("Success: query_tables with rows = %d and cols = %d\n",rows,cols);
+		printf("Res: rows = %d and cols = %d\n", qdb_rows(res),qdb_columns(res));
+	}
+	printf("Res: rows = %d and cols = %d\n", qdb_rows(res),qdb_columns(res));
+	printf("In: rows = %d and cols = %d\n",rows,cols);
+}
+
+
 
 //Don't use this
 //void testdbfuncs(qdb_hdl_t* hdl){
@@ -533,30 +607,37 @@ int insert_tab_order_item(qdb_hdl_t* hdl, char* name, int oid, int count){
 
 
 //++++++++++++++++++ SELECTS ++++++++++++++++++
-int process_result(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols){
-	res = qdb_getresult(hdl);
-	if (res == NULL){
+
+//Helper
+int process_result(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols){
+	*res = qdb_getresult(hdl);
+	if (*res == NULL){
 		return -1;
 	}
-	*rows = qdb_rows(res);
-	*cols = qdb_columns(res);
+	*rows = qdb_rows(*res);
+	*cols = qdb_columns(*res);
 	if (*rows == -1 || *cols == -1){
 		return -1;
 	}
+
+	//printf("INSIDE PROCESS RESULT Res: rows = %d and cols = %d\n", qdb_rows(*res),qdb_columns(*res));
 	return 0;
 }
 
-int get_tables(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols){
+int get_tables(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols){
 	int rc;
+	int ret;
 	//These will be properly set later unless something goes wrong
 	*rows = -1;
 	*cols = -1;
 	rc = qdb_statement(hdl,"SELECT * FROM 'TABLE';");
 	if (rc < 0) return -1;
-	return process_result(hdl, res, rows, cols);
+	ret = process_result(hdl, res, rows, cols);
+	//printf("INSIDE TABLES Res: rows = %d and cols = %d\n", qdb_rows(*res),qdb_columns(*res));
+	return ret;
 }
 
-int get_menu_items(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols){
+int get_menu_items(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols){
 	int rc;
 	//These will be properly set later unless something goes wrong
 	*rows = -1;
@@ -566,7 +647,7 @@ int get_menu_items(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols){
 	return process_result(hdl, res, rows, cols);
 }
 
-int get_reservations(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols){
+int get_reservations(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols){
 	int rc;
 	//These will be properly set later unless something goes wrong
 	*rows = -1;
@@ -576,7 +657,7 @@ int get_reservations(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols){
 	return process_result(hdl, res, rows, cols);
 }
 
-int get_reservation(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int year, int month, int day){
+int get_reservation(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, int year, int month, int day){
 	int rc;
 	//These will be properly set later unless something goes wrong
 	*rows = -1;
@@ -586,17 +667,17 @@ int get_reservation(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int
 	return process_result(hdl, res, rows, cols);
 }
 
-int get_tables_tags(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int table_num){
+int get_tables_tags(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, int table_num){
 	int rc;
 	//These will be properly set later unless something goes wrong
 	*rows = -1;
 	*cols = -1;
-	rc = qdb_statement(hdl,"SELECT (name) FROM 'TABLE' AS A INNER JOIN 'TABLE_TAG' WHERE A.table_num=%d;", table_num);
+	rc = qdb_statement(hdl,"SELECT (name) FROM 'TABLE' AS A INNER JOIN 'TABLE_TAG' AS B ON A.table_num=B.table_num WHERE A.table_num=%d;", table_num);
 	if (rc < 0) return -1;
 	return process_result(hdl, res, rows, cols);
 }
 
-int query_tables(qdb_hdl_t* hdl, qdb_result_t* res, int* rows, int* cols, int num_people){
+int query_tables(qdb_hdl_t* hdl, qdb_result_t** res, int* rows, int* cols, int num_people){
 	int rc;
 		//These will be properly set later unless something goes wrong
 		*rows = -1;
