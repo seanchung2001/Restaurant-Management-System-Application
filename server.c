@@ -291,6 +291,13 @@ int main(void) {
 					}
 					break;
 				case CREATE_TABLE_ORDER_MSG_TYPE:
+					//Check if the table number specified by client is being used, if not return error
+					if (tables[client_msg.table_order.table_num-1].isReserved == 0) {
+						create_table_order_flag = -1;
+						MsgReply(rcvid, 0, &create_table_order_flag, sizeof(create_table_order_flag));
+						printf("table order failed\n");
+						break;
+					}
 					//Iterate for the maximum number of orders a client can make online (16), or until the list is finished
 					for (int i = 0; i < MAX_TABLE_ORDER_ITEMS; i++){
 						if (strcmp(client_msg.table_order.menu_items[i], "done") == 0) {
@@ -307,8 +314,17 @@ int main(void) {
 								create_table_order_flag = -1;
 								MsgReply(rcvid, 0, &create_table_order_flag, sizeof(create_table_order_flag));
 								printf("table order failed\n");
+								break;
 							}
 						}
+					}
+					if (create_table_order_flag == -1) {
+						for (int i = 0; i < MAX_MENU_ITEMS; i++) {
+							if (menu[i].count > 0) {
+								menu[i].count = 0;
+							}
+						}
+						break;
 					}
 					create_table_order_flag = create_table_order(client_msg.table_order.table_num, tableOrderID);
 					if (create_table_order_flag == 0) {
@@ -323,9 +339,17 @@ int main(void) {
 					}
 					break;
 				case GET_TABLE_IN_HOUSE_MSG_TYPE:
+					if (client_msg.get_table.num_people > MAX_NUM_SEATS) {
+						printf("Too many seats requested... most seats for a table is 16\n");
+					}
 					get_table_num = get_table_in_house(client_msg.get_table.num_people);
+					if (get_table_num >= 0) {
+						printf("get table in house successful\n");
+					}
+					else{
+						printf("get table in house failed\n");
+					}
 					MsgReply(rcvid, 0, &get_table_num, sizeof(get_table_num));
-					printf("get table in house successful");
 					break;
 				case GET_PRINT_RECEIPT_MSG_TYPE:
 					printReceiptTotal = table_print_receipt(client_msg.print_receipt.table_num);
@@ -565,7 +589,6 @@ int create_table_order(int table_num, int orderID) {
 	}*/
 	for (int i = 0; i < MAX_MENU_ITEMS; i++) {
 		if (menu[i].count > 0) {
-			printf("hi\n");
 			printf("menu[i]: %s\n", menu[i].name);
 			table_order_item_t tmpTableOrder;
 			strcpy(tmpTableOrder.menu_item_name, menu[i].name);
