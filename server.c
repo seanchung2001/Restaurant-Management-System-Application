@@ -19,9 +19,17 @@ typedef union
 	recv_table_print_receipt_t print_receipt;
 } recv_buf_t;
 
+typedef union
+{
+	void *ptr;
+	int* val;
+	long long* longval;
+	char strval[MAX_STRING_LEN];
+}void_cast;
+
 //Function forward declaration
-int create_reservation(int num_seats, char *meta_tag, int year, int month, int day, char *fName, char *lName, int phoneNum, int start_hour, int start_min, int duration_hour, int duration_min, int curYear, int curMonth, int curDay, int resID);
-float create_online_order(int year, int month, int day, int hour, int minute, char *fName, char *lName, char *address, int phoneNum, int curYear, int curMonth, int curDay, int orderID);
+int create_reservation(int num_seats, char *meta_tag, int year, int month, int day, char *fName, char *lName, long long phoneNum, int start_hour, int start_min, int duration_hour, int duration_min, int curYear, int curMonth, int curDay, int resID);
+float create_online_order(int year, int month, int day, int hour, int minute, char *fName, char *lName, char *address, long long phoneNum, int curYear, int curMonth, int curDay, int orderID);
 int create_table_order(int table_num, int orderID);
 int get_table_in_house(int num_people);
 float table_print_receipt(int table_num);
@@ -65,11 +73,14 @@ int main(void) {
 	//the hdl can be passed to dbfuncs to access the opened connection
 	//IMPORTANT: make sure to qdb_disconnect(hdl) when ending the program.
 	qdb_hdl_t* hdl;
+	qdb_result_t *getReservations;
+	void_cast vc;
+	int reservationNumRows;
+	int reservationNumCols;
 	hdl = qdb_connect(DB_NAME, QDB_CONN_DFLT_SHARE);
 	if (hdl == NULL) {
 		perror("qdb_connect");
 	}
-
 	//sean's variables
 	name_attach_t *attach;
 	int rcvid;
@@ -153,7 +164,7 @@ int main(void) {
 	table_tags[5]= tableTag6;
 	//Insert menu items (this is for testing and should be added by mohammad when doing profile)
 	menu_item_t menu_item1;
-	strcpy(menu_item1.name, "root beer float");
+	strcpy(menu_item1.name, "root+beer+float");
 	menu_item1.count = 0;
 	strcpy(menu_item1.description, "16oz root beer float");
 	menu_item1.price = 4.99;
@@ -161,7 +172,7 @@ int main(void) {
 	menu[0] = menu_item1;
 	insert_menu_item(hdl, &menu_item1);
 	menu_item_t menu_item2;
-	strcpy(menu_item2.name, "steak and lobster");
+	strcpy(menu_item2.name, "steak+lobster");
 	menu_item2.count = 0;
 	strcpy(menu_item2.description, "7oz sirloin wiht lobster tail");
 	menu_item2.price = 27.99;
@@ -169,7 +180,7 @@ int main(void) {
 	menu[1] = menu_item2;
 	insert_menu_item(hdl, &menu_item2);
 	menu_item_t menu_item3;
-	strcpy(menu_item3.name, "french fries");
+	strcpy(menu_item3.name, "french+fries");
 	menu_item3.count = 0;
 	strcpy(menu_item3.description, "seasoned with salt and pepper");
 	menu_item3.price = 6.99;
@@ -209,6 +220,10 @@ int main(void) {
 						for (int i = 0; i < num_future_reservations; i++) {
 							insert_reservation(hdl, &future_reservations[i]);
 						}
+						for (int i = 0; i < num_today_reservations; i++) {
+							insert_reservation(hdl, &today_reservations[i]);
+							printf("reservation id: %d\n", today_reservations[i].id);
+						}
 						for (int i = 0; i < num_existing_orders; i++) {
 							insert_tab_order_item(hdl, table_orders_existing[i].menu_item_name, table_orders_existing[i].order_id, table_orders_existing[i].count);
 						}
@@ -224,9 +239,54 @@ int main(void) {
 						for (int i = 0; i < num_table_receipts; i++) {
 							insert_table_order(hdl, &table_order_receipts[i], &table_order_receipts[i].orderID);
 						}
+						//clear all the arrays
+						memset(future_reservations, 0, sizeof(future_reservations));
+						memset(today_reservations, 0, sizeof(today_reservations));
+						memset(table_orders_existing, 0, sizeof(table_orders_existing));
+						memset(online_order_items, 0, sizeof(online_order_items));
+						memset(online_orders_today, 0, sizeof(online_orders_today));
+						memset(online_orders_future, 0, sizeof(online_orders_future));
+						memset(table_order_receipts, 0, sizeof(table_order_receipts));
+						num_future_reservations = 0;
+						num_today_reservations = 0;
+						num_existing_orders = 0;
+						num_online_order_items = 0;
+						num_online_orders_today = 0;
+						num_online_orders_future = 0;
+						num_table_receipts = 0;
 
-					//}
+						//Get reservations for current day
+						get_reservation(hdl, &getReservations, &reservationNumRows, &reservationNumCols, calculate_current_year(dateTime.tm_year), calculate_current_month(dateTime.tm_mon), dateTime.tm_mday);
+						for (int i = 0; i < reservationNumRows; i++) {
+							reservations_t tmpRes;
+							vc.ptr = (int*) qdb_cell(getReservations, i, 1);
+							tmpRes.table_num = *(int*)vc.val;
+							vc.ptr = (int*) qdb_cell(getReservations, i, 2);
+							tmpRes.year = *(int*)vc.val;
+							vc.ptr = (int*) qdb_cell(getReservations, i, 3);
+							tmpRes.month = *(int*)vc.val;
+							vc.ptr = (int*) qdb_cell(getReservations, i, 4);
+							tmpRes.day = *(int*)vc.val;
+							strcpy(tmpRes.first_name, qdb_cell(getReservations, i, 5));
+							strcpy(tmpRes.last_name, qdb_cell(getReservations, i, 6));
+							vc.ptr = (long long *) qdb_cell(getReservations, i, 7);
+							tmpRes.phone_num = *(long long*) vc.longval;
+							vc.ptr = (int*) qdb_cell(getReservations, i, 8);
+							tmpRes.start_hour = *(int*) vc.val;
+							vc.ptr = (int*) qdb_cell(getReservations, i, 9);
+							tmpRes.start_min = *(int*) vc.val;
+							vc.ptr = (int*)qdb_cell(getReservations, i, 10);
+							tmpRes.end_hour = *(int*) vc.val;
+							vc.ptr = (int*) qdb_cell(getReservations, i, 11);
+							tmpRes.end_min = *(int*) vc.val;
+							today_reservations[i] = tmpRes;
+							num_today_reservations++;
+						}
+						for (int i = 0; i < num_today_reservations; i++) {
+							printf("reservations[i] for testing, res first name: %s, phone num: %lld, table_num: %d\n", today_reservations[i].first_name, today_reservations[i].phone_num, today_reservations[i].table_num);
+						}
 					break;
+				//}
 			}
 		}
 		else{
@@ -404,7 +464,7 @@ int main(void) {
 return 0;
 }
 //Check if it is in the future
-int create_reservation(int num_seats, char *meta_tag, int year, int month, int day, char *fName, char *lName, int phoneNum, int start_hour, int start_min, int duration_hour, int duration_min, int curYear, int curMonth, int curDay, int resID)
+int create_reservation(int num_seats, char *meta_tag, int year, int month, int day, char *fName, char *lName, long long phoneNum, int start_hour, int start_min, int duration_hour, int duration_min, int curYear, int curMonth, int curDay, int resID)
 {
 	int cpyNumSeats = num_seats;
 	int found_table = 0;
@@ -415,7 +475,7 @@ int create_reservation(int num_seats, char *meta_tag, int year, int month, int d
 				if (tables[i].isReserved == 0 && tables[i].num_seats == cpyNumSeats) {
 					for(int k = 0; k < MAX_TABLE_TAGS; k++) {
 						printf("table num: %d, table num seats: %d\n", tables[i].table_num, tables[i].num_seats);
-						if (strcmp(table_tags[k].meta_tag_name, meta_tag) == 0 && table_tags[k].table_num == tables[i].table_num) {
+						if ((strcmp(table_tags[k].meta_tag_name, meta_tag) == 0 && table_tags[k].table_num == tables[i].table_num) || (strcmp(meta_tag,"") == 0)) {
 							printf("table num: %d, table num seats: %d, table tag: %s\n", tables[i].table_num, tables[i].num_seats, table_tags[k].meta_tag_name);
 							for (int j = 0; j < num_today_reservations; j++) {
 								if (today_reservations[j].status == 0) {
@@ -474,7 +534,7 @@ int create_reservation(int num_seats, char *meta_tag, int year, int month, int d
 				if (tables[i].num_seats == cpyNumSeats) {
 					for(int k = 0; k < MAX_TABLE_TAGS; k++) {
 						//printf("table num: %d, table num seats: %d, table tag: %s\n", tables[i].table_num, tables[i].num_seats, table_tags[k].meta_tag_name);
-						if (strcmp(table_tags[k].meta_tag_name, meta_tag) == 0 && table_tags[k].table_num == tables[i].table_num) {
+						if ((strcmp(table_tags[k].meta_tag_name, meta_tag) == 0 && table_tags[k].table_num == tables[i].table_num) || (strcmp(meta_tag, "") == 0)) {
 							printf("table num: %d, table num seats: %d, table tag: %s\n", tables[i].table_num, tables[i].num_seats, table_tags[k].meta_tag_name);
 							for (int j = 0; j < num_future_reservations; j++) {
 								if (future_reservations[j].table_num == tables[i].table_num && future_reservations[j].year == year && future_reservations[j].month == month && future_reservations[j].day == day && future_reservations[j].status == 0) {
@@ -528,7 +588,7 @@ int create_reservation(int num_seats, char *meta_tag, int year, int month, int d
 	return found_table;
 }
 
-float create_online_order(int year, int month, int day, int hour, int minute, char *fName, char *lName, char *address, int phoneNum, int curYear, int curMonth, int curDay, int orderID)
+float create_online_order(int year, int month, int day, int hour, int minute, char *fName, char *lName, char *address, long long phoneNum, int curYear, int curMonth, int curDay, int orderID)
 {
 	float total = 0;
 	//Error check for seeing if the online order made is before the current day (invalid)
@@ -703,5 +763,6 @@ int insert_tables_database(qdb_hdl_t *hdl) {
 		tables[i] = tmpTable;
 		tables_size++;
 	}
+
 	return 0;
 }

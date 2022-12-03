@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
 			scanf("%s", inHouseOrderMsg.menu_items[count]);
 			count ++;
 		}
+		strcpy(inHouseOrderMsg.menu_items[count], "done");
 
 		//send msg, confirmationNum will be order number
 		if (-1 == MsgSend(server_coid, &inHouseOrderMsg, sizeof(inHouseOrderMsg), &confirmationNum, sizeof(confirmationNum))) {
