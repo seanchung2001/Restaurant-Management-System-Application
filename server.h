@@ -5,7 +5,6 @@
 #define SERVER_H_
 
 #define SERVER_NAME "rmsa" //use this as the name to register in the pathname space to create and connect to the channel
-#define KITCHEN_SERVER_NAME "tmpserer"
 
 //Will remove this once we figure out what exactly needs to be sent back to the client
 #define RESERVATION_SUCCESS   "Reservation was successful!"
