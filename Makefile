@@ -17,7 +17,7 @@ TARGET = -Vgcc_ntox86_64
 
 CFLAGS += $(DEBUG) $(TARGET) $(LIBS) -Wall
 LDFLAGS+= $(DEBUG) $(TARGET)
-BINS = client server
+BINS = onlineClient server kitchenServer inHouseClient
 all: $(BINS)
 
 clean:
@@ -25,6 +25,7 @@ clean:
 #	cd solutions; make clean
 
 
-#server.o: server.c server.h
-#client.o: client.c server.h
-
+server.o: server.c server.h
+onlineClient.o: onlineClient.c server.h
+inHouseClient.o: inHouseClient.c server.h
+kitchenServer.o: kitchenServer.c server.h

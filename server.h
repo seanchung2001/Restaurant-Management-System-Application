@@ -57,7 +57,6 @@ typedef struct resp_msg_reservation {
 	int reservationID;
 }resp_msg_reservation_t;
 
-//order number might be required
 typedef struct recv_msg_online_order {
 	uint16_t type;
 	struct _pulse pulse;
@@ -71,6 +70,8 @@ typedef struct recv_msg_online_order {
 	char last_name[MAX_STRING_LEN+1];
 	char address[MAX_STRING_LEN+1];
 	int phone_num;
+	int order_num; //just for the kitchen server
+	int order_item_count; //just for the kitchen server
 } recv_msg_online_order_t;
 
 typedef struct resp_msg_online_order {
@@ -78,13 +79,13 @@ typedef struct resp_msg_online_order {
 	float total;
 }resp_msg_online_order_t;
 
-//why is menu not a ptr here
-//order number might be required - just an int incrementing, daily resets
 typedef struct recv_msg_table_order {
 	uint16_t type;
 	struct _pulse pulse;
-	char menu_items[MAX_TABLE_ORDER_ITEMS][MAX_STRING_LEN+1];//menu should be a string, items separated by a comma only (no space)
+	char menu_items[MAX_TABLE_ORDER_ITEMS][MAX_STRING_LEN+1];
 	int table_num;
+	int order_num; //just for the kitchen server
+	int order_item_count; //just for the kitchen server
 } recv_msg_table_order_t;
 
 typedef struct recv_get_table_in_house {
