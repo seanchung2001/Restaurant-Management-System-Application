@@ -5,6 +5,7 @@
 #define SERVER_H_
 
 #define SERVER_NAME "rmsa" //use this as the name to register in the pathname space to create and connect to the channel
+#define KITCHEN_SERVER_NAME "tmpname"
 
 //Will remove this once we figure out what exactly needs to be sent back to the client
 #define RESERVATION_SUCCESS   "Reservation was successful!"
@@ -25,7 +26,8 @@
 #define MAX_TABLE_TAGS         5  //Number of table tags in our database.
 #define MAX_NUM_RESERVATIONS   20  //Maximum number of reservations the system can store
 #define MAX_ONLINE_ORDERS      300 //Maximum number of online orders the system can store per day
-#define MAX_NUM_TABLES         50
+#define MAX_NUM_TABLES         48
+#define MAX_META_TAGS          7
 
 #define CREATE_RESERVATION_MSG_TYPE (_IO_MAX+200)
 #define CREATE_ONLINE_ORDER_MSG_TYPE (_IO_MAX+201)
@@ -33,6 +35,15 @@
 #define GET_TABLE_IN_HOUSE_MSG_TYPE (_IO_MAX+203)
 #define GET_PRINT_RECEIPT_MSG_TYPE (_IO_MAX+204)
 #define PERIODIC_TIMER_PULSE_CODE (_PULSE_CODE_MINAVAIL+2)
+
+//meta-tags
+#define WINDOW_SEATS          "window"
+#define BAR_SEATS             "bar"
+#define PARTY_SIZE_SEATS      "party"
+#define COUPLE_SEATS          "couple"
+#define OUTDOOR_SEATS         "outdoor"
+#define PATIO_SEATS           "patio"
+#define BOOTH_SEATS           "booth"
 
 // Receive a message from client
 typedef struct recv_msg_reservation {
@@ -45,7 +56,7 @@ typedef struct recv_msg_reservation {
 	int day; //required
 	char first_name[MAX_STRING_LEN+1]; //required
 	char last_name[MAX_STRING_LEN+1]; //required
-	int phone_num; //required
+	long long int phone_num; //required
 	int start_hour; //required
 	int start_min; //required
 	int end_hour; //required
@@ -69,7 +80,7 @@ typedef struct recv_msg_online_order {
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
 	char address[MAX_STRING_LEN+1];
-	int phone_num;
+	long long int phone_num;
 	int order_num; //just for the kitchen server
 	int order_item_count; //just for the kitchen server
 } recv_msg_online_order_t;
@@ -165,7 +176,7 @@ typedef struct online_order {
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
 	char address[MAX_STRING_LEN+1];
-	int phone_num;
+	long long int phone_num;
 	float total;
 }online_order_t;
 
@@ -178,7 +189,7 @@ typedef struct reservations {
 	int day;
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
-	int phone_num;
+	long long int phone_num;
 	int start_hour;
 	int start_min;
 	int end_hour;

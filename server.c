@@ -28,22 +28,15 @@ float table_print_receipt(int table_num);
 int calculate_current_hour(int hour);
 int calculate_current_month(int month);
 int calculate_current_year(int year);
+int insert_tables_database(qdb_hdl_t *hdl);
+int insert_tables_database(qdb_hdl_t *hdl);
 
 //Database structs
 table_t tables[MAX_NUM_TABLES];\
 //For debugging, tables will be read in from database
-table_t table1;
-table_t table2;
-table_t table3;
-table_t table4;
-table_t table5;
-int tables_size = 5;
+int tables_size = 0;
 
 menu_item_t menu[MAX_MENU_ITEMS];
-//For debugging, menu items will be read in from database
-menu_item_t menuItem1;
-menu_item_t menuItem2;
-menu_item_t menuItem3;
 
 table_order_item_t table_orders_existing[MAX_TABLE_ORDERS];
 int num_existing_orders = 0;
@@ -52,12 +45,6 @@ table_order_receipt_t table_order_receipts[MAX_TABLE_RECEIPTS];
 int num_table_receipts = 0;
 
 table_tag_t table_tags[MAX_TABLE_TAGS];
-//For debugging use, table tags will be read in from database
-table_tag_t tag1;
-table_tag_t tag2;
-table_tag_t tag3;
-table_tag_t tag4;
-table_tag_t tag5;
 
 reservations_t today_reservations[MAX_NUM_RESERVATIONS];
 int num_today_reservations = 0;
@@ -106,83 +93,6 @@ int main(void) {
 	struct tm dateTime = *localtime(&curDate);
 	printf("now: %d-%d-%d %d:%d\n", dateTime.tm_year+1900, dateTime.tm_mon+1, dateTime.tm_mday, calculate_current_hour(dateTime.tm_hour), dateTime.tm_min);
 
-	//generate tables for testing
-	table1.table_num = 1;
-	table1.isReserved = 0;
-	table1.num_seats = 5;
-	tables[0] = table1;
-	table2.table_num = 2;
-	table2.isReserved = 0;
-	table2.num_seats = 4;
-	tables[1] = table2;
-	table3.table_num = 3;
-	table3.isReserved = 0;
-	table3.num_seats = 8;
-	tables[2] = table3;
-	table4.table_num = 4;
-	table4.isReserved = 0;
-	table4.num_seats = 16;
-	tables[3] = table4;
-	table5.table_num = 5;
-	table5.isReserved = 0;
-	table5.num_seats = 2;
-	tables[4] = table5;
-
-	//generate menu for testing
-	strcpy(menuItem1.name, "steak and lobster");
-	strcpy(menuItem1.description, "7oz sirloin steak and lobster tail");
-	menuItem1.price = 27.99;
-	strcpy(menuItem1.type, "Main");
-	menuItem1.count = 0;
-	menu[0] = menuItem1;
-	strcpy(menuItem2.name, "french fries");
-	strcpy(menuItem2.description, "french fries seasoned with salt and pepper");
-	menuItem2.price = 6.99;
-	strcpy(menuItem2.type, "side dish");
-	menuItem2.count = 0;
-	menu[1] = menuItem2;
-	strcpy(menuItem3.name, "root beer float");
-	strcpy(menuItem3.description, "16oz of root beer with a scoop of vanilla ice cream");
-	menuItem3.price = 5.99;
-	strcpy(menuItem3.type, "beverage");
-	menuItem3.count = 0;
-	menu[2] = menuItem3;
-
-	//enerate table tags for testing
-	strcpy(tag1.meta_tag_name, "outdoor");
-	strcpy(tag2.meta_tag_name, "bar");
-	strcpy(tag3.meta_tag_name, "window");
-	strcpy(tag4.meta_tag_name, "window");
-	strcpy(tag5.meta_tag_name, "party");
-	tag1.table_num = 1;
-	tag2.table_num = 2;
-	tag3.table_num = 2;
-	tag4.table_num = 3;
-	tag5.table_num = 4;
-	table_tags[0] = tag1;
-	table_tags[1] = tag2;
-	table_tags[2] = tag3;
-	table_tags[3] = tag4;
-	table_tags[4] = tag5;
-
-	//generate reservation for testing
-	/*reservations_t res1;
-	res1.day = 29;
-	res1.end_hour = 0;
-	res1.end_min = 1;
-	strcpy(res1.first_name, "Sean");
-	strcpy(res1.last_name, "Chung");
-	res1.month = 11;
-	strcpy(res1.phoneNum, "613-242-7897");
-	res1.start_hour = 16;
-	res1.start_min = 50;
-	res1.year = 2022;
-	res1.table_num = 2;
-	res1.id = 2002;
-	res1.status = 0;
-	today_reservations[0] = res1;
-	num_today_reservations++;*/
-
 	//mohammad's section
 
 	//sean's section
@@ -199,6 +109,73 @@ int main(void) {
 	itime.it_interval.tv_nsec = 0;
 	timer_settime(timerID, 0, &itime, NULL);
 
+	//insert tables into db
+	insert_tables_database(hdl);
+	//insert meta tags into db
+	insert_meta_tag(hdl, WINDOW_SEATS);
+	insert_meta_tag(hdl, BAR_SEATS);
+	insert_meta_tag(hdl, PARTY_SIZE_SEATS);
+	insert_meta_tag(hdl, COUPLE_SEATS);
+	insert_meta_tag(hdl, OUTDOOR_SEATS);
+	insert_meta_tag(hdl, PATIO_SEATS);
+	insert_meta_tag(hdl, BOOTH_SEATS);
+	//insert table tags into db (this is for testing and should be added by mohammad when doing profile)
+	insert_table_tag(hdl, 3, COUPLE_SEATS);
+	insert_table_tag(hdl, 0, BAR_SEATS);
+	insert_table_tag(hdl, 48, PARTY_SIZE_SEATS);
+	insert_table_tag(hdl, 14, OUTDOOR_SEATS);
+	insert_table_tag(hdl, 22, PATIO_SEATS);
+	insert_table_tag(hdl, 36, BOOTH_SEATS);
+	table_tag_t tableTag1;
+	strcpy(tableTag1.meta_tag_name, COUPLE_SEATS);
+	tableTag1.table_num = 3;
+	table_tags[0] = tableTag1;
+	table_tag_t tableTag2;
+	strcpy(tableTag2.meta_tag_name, BAR_SEATS);
+	tableTag2.table_num = 0;
+	table_tags[1]= tableTag2;
+	table_tag_t tableTag3;
+	strcpy(tableTag3.meta_tag_name, PARTY_SIZE_SEATS);
+	tableTag3.table_num = 48;
+	table_tags[2]= tableTag3;
+	table_tag_t tableTag4;
+	strcpy(tableTag4.meta_tag_name, OUTDOOR_SEATS);
+	tableTag2.table_num = 14;
+	table_tags[3]= tableTag4;
+	table_tag_t tableTag5;
+	strcpy(tableTag5.meta_tag_name, PATIO_SEATS);
+	tableTag5.table_num = 22;
+	table_tags[4]= tableTag5;
+	table_tag_t tableTag6;
+	strcpy(tableTag6.meta_tag_name, BOOTH_SEATS);
+	tableTag6.table_num = 36;
+	table_tags[5]= tableTag6;
+	//Insert menu items (this is for testing and should be added by mohammad when doing profile)
+	menu_item_t menu_item1;
+	strcpy(menu_item1.name, "root beer float");
+	menu_item1.count = 0;
+	strcpy(menu_item1.description, "16oz root beer float");
+	menu_item1.price = 4.99;
+	strcpy(menu_item1.type, "beverage");
+	menu[0] = menu_item1;
+	insert_menu_item(hdl, &menu_item1);
+	menu_item_t menu_item2;
+	strcpy(menu_item2.name, "steak and lobster");
+	menu_item2.count = 0;
+	strcpy(menu_item2.description, "7oz sirloin wiht lobster tail");
+	menu_item2.price = 27.99;
+	strcpy(menu_item2.type, "main");
+	menu[1] = menu_item2;
+	insert_menu_item(hdl, &menu_item2);
+	menu_item_t menu_item3;
+	strcpy(menu_item3.name, "french fries");
+	menu_item3.count = 0;
+	strcpy(menu_item3.description, "seasoned with salt and pepper");
+	menu_item3.price = 6.99;
+	strcpy(menu_item3.type, "side");
+	menu[2] = menu_item3;
+	insert_menu_item(hdl, &menu_item3);
+
 	while (1) {
 		//receive message/pulse
 		rcvid = MsgReceive(attach->chid, &client_msg, sizeof(client_msg), NULL);
@@ -214,16 +191,40 @@ int main(void) {
 						//check if any reservations have started to set table to isReserved
 						if (today_reservations[i].start_hour == calculate_current_hour(dateTime.tm_hour) && today_reservations[i].start_min == dateTime.tm_min) {
 							tables[today_reservations[i].table_num-1].isReserved = 1;
+							update_table(hdl, today_reservations[i].table_num, 1);
 							today_reservations[i].status = 1;
 							printf("reservation started\n");
 						}
 						//check if any reservations have ended to free up tables
 						if (today_reservations[i].end_hour == calculate_current_hour(dateTime.tm_hour) && today_reservations[i].end_min == dateTime.tm_min) {
 							tables[today_reservations[i].table_num-1].isReserved = 0;
+							update_table(hdl, today_reservations[i].table_num, 0);
 							today_reservations[i].status = 2;
 							printf("reservation ended\n");
 						}
 					}
+					//if (calculate_current_hour(dateTime.tm_hour) == 0 && dateTime.tm_min == 0) {
+						//Write stuff to database and clear array of structs
+						for (int i = 0; i < num_future_reservations; i++) {
+							insert_reservation(hdl, &future_reservations[i]);
+						}
+						for (int i = 0; i < num_existing_orders; i++) {
+							insert_tab_order_item(hdl, table_orders_existing[i].menu_item_name, table_orders_existing[i].order_id, table_orders_existing[i].count);
+						}
+						for (int i = 0; i < num_online_order_items; i++) {
+							insert_on_order_item(hdl, online_order_items[i].menu_item_name, online_order_items[i].orderID , online_order_items[i].count);
+						}
+						for (int i = 0; i < num_online_orders_today; i++) {
+							insert_online_order(hdl, &online_orders_today[i], &online_orders_today[i].id);
+						}
+						for (int i = 0; i < num_online_orders_future; i++) {
+							insert_online_order(hdl, &online_orders_future[i], &online_orders_future[i].id);
+						}
+						for (int i = 0; i < num_table_receipts; i++) {
+							insert_table_order(hdl, &table_order_receipts[i], &table_order_receipts[i].orderID);
+						}
+
+					//}
 					break;
 			}
 		}
@@ -345,6 +346,7 @@ int main(void) {
 					get_table_num = get_table_in_house(client_msg.get_table.num_people);
 					if (get_table_num >= 0) {
 						printf("get table in house successful\n");
+						update_table(hdl, get_table_num, 1);
 					}
 					else{
 						printf("get table in house failed\n");
@@ -374,6 +376,7 @@ int main(void) {
 
 						//Set the table to not reserved
 						tables[client_msg.print_receipt.table_num-1].isReserved = 0;
+						update_table(hdl, client_msg.print_receipt.table_num, 0);
 
 						//Create the response to send to client
 						print_receipt_response.table_num = client_msg.print_receipt.table_num;
@@ -680,4 +683,24 @@ int calculate_current_year(int year) {
 
 int calculate_current_month(int month) {
 	return month+1;
+}
+
+int insert_tables_database(qdb_hdl_t *hdl) {
+	int numSeats = 0;
+	for (int i = 0; i < MAX_NUM_TABLES; i++) {
+		if (i % 3 == 0) {
+			numSeats++;
+		}
+		table_t tmpTable;
+		tmpTable.isReserved = 0;
+		tmpTable.num_seats = numSeats;
+		tmpTable.table_num = i+1;
+		if (insert_table(hdl, &tmpTable) == -1) {
+			printf("error writing to 'tables' database\n");
+			return -1;
+		}
+		tables[i] = tmpTable;
+		tables_size++;
+	}
+	return 0;
 }
