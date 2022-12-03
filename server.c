@@ -76,6 +76,7 @@ int main(void) {
 
 	//Connect to database
 	//the hdl can be passed to dbfuncs to access the opened connection
+	//IMPORTANT: make sure to qdb_disconnect(hdl) when ending the program.
 	qdb_hdl_t* hdl;
 	hdl = qdb_connect(DB_NAME, QDB_CONN_DFLT_SHARE);
 	if (hdl == NULL) {

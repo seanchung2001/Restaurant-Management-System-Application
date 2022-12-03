@@ -316,10 +316,10 @@ void testreservation(qdb_hdl_t* hdl){
 	res.table_num = 12;
 	res.year = 2022;
 	res.month = 12;
-	res.day = 1;
+	res.day = 3;
 	strcpy(res.first_name, "John");
-	strcpy(res.last_name, "Joel");
-	res.phone_num = 123;
+	strcpy(res.last_name, "Jimbo");
+	res.phone_num = 123456789123456789;
 	res.start_hour = 13;
 	res.start_min = 30;
 	res.end_hour = 14;
@@ -372,7 +372,7 @@ void testonlineorder(qdb_hdl_t* hdl){
 	strcpy(o.first_name, "John");
 	strcpy(o.last_name, "Joel");
 	strcpy(o.address, "fake add");
-	o.phone_num = 12345;
+	o.phone_num = 123456789123456789;
 
 	rc = insert_online_order(hdl, &o, &id);
 	if (rc < 0 || id < 0){
@@ -545,7 +545,7 @@ int login_profile(qdb_hdl_t* hdl, char *login, char *password){
 }
 
 int insert_table(qdb_hdl_t* hdl, table_t* t){
-	return qdb_statement(hdl, "INSERT INTO 'TABLE' VALUES (%d,%d,%d);", (int)t->table_num, (int)t->num_seats, (int)t->isReserved);
+	return qdb_statement(hdl, "INSERT INTO 'TABLE' VALUES (%d,%d,%d);", t->table_num, t->num_seats, t->isReserved);
 }
 
 //Not really an insertion, just an update
@@ -554,7 +554,7 @@ int update_table(qdb_hdl_t* hdl, int t_num, int newval){
 }
 
 int insert_reservation(qdb_hdl_t* hdl, reservations_t* r){
-	return qdb_statement(hdl, "INSERT INTO 'RESERVATION' ('table_num','year','month','day','first_name','last_name','phone_num','start_hour','start_min','end_hour','end_min') VALUES (%d,%d,%d,%d,'%q','%q',%d,%d,%d,%d,%d);", (int)r->table_num, (int)r->year, (int)r->month, (int)r->day, r->first_name, r->last_name, (int)r->phone_num, (int)r->start_hour, (int)r->start_min, (int)r->end_hour, (int)r->end_min);
+	return qdb_statement(hdl, "INSERT INTO 'RESERVATION' ('table_num','year','month','day','first_name','last_name','phone_num','start_hour','start_min','end_hour','end_min') VALUES (%d,%d,%d,%d,'%q','%q',%lld,%d,%d,%d,%d);", r->table_num, r->year, r->month, r->day, r->first_name, r->last_name, r->phone_num, r->start_hour, r->start_min, r->end_hour, r->end_min);
 }
 
 int insert_meta_tag(qdb_hdl_t* hdl, char* tag){
@@ -569,7 +569,7 @@ int insert_online_order(qdb_hdl_t* hdl, online_order_t* o, int* id){
 	int rc;
 	void* cr;
 	qdb_result_t* res;
-	rc = qdb_statement(hdl, "INSERT INTO 'ONLINE_ORDER' ('year','month','day','hour','min','total','first_name','last_name','address','phone_num') VALUES (%d,%d,%d,%d,%d,%f,'%q','%q','%q',%d);",(int)o->year,(int)o->month,(int)o->day,(int)o->hour,(int)o->minute,o->total,o->first_name,o->last_name,o->address,(int)o->phone_num);
+	rc = qdb_statement(hdl, "INSERT INTO 'ONLINE_ORDER' ('year','month','day','hour','min','total','first_name','last_name','address','phone_num') VALUES (%d,%d,%d,%d,%d,%f,'%q','%q','%q',%lld);",o->year,o->month,o->day,o->hour,o->minute,o->total,o->first_name,o->last_name,o->address,o->phone_num);
 	if (rc < 0) return -1;
 
 	//Retrieve the last id of the order that was just inserted
@@ -589,7 +589,7 @@ int insert_table_order(qdb_hdl_t* hdl, table_order_receipt_t* t, int* id){
 	int rc;
 	void* cr;
 	qdb_result_t* res;
-	rc = qdb_statement(hdl, "INSERT INTO 'TABLE_ORDER' ('total','year','month','day','table_num') VALUES (%f,%d,%d,%d,%d);",t->total,(int)t->year,(int)t->month,(int)t->day,(int)t->table_num);
+	rc = qdb_statement(hdl, "INSERT INTO 'TABLE_ORDER' ('total','year','month','day','table_num') VALUES (%f,%d,%d,%d,%d);",t->total,t->year,t->month,t->day,t->table_num);
 	if (rc < 0) return -1;
 
 	//Retrieve the last id of the order that was just inserted
