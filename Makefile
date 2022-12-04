@@ -25,7 +25,7 @@ clean:
 #	cd solutions; make clean
 
 
-server.o: server.c server.h
-onlineClient.o: onlineClient.c server.h
-inHouseClient.o: inHouseClient.c server.h
-kitchenServer.o: kitchenServer.c server.h
+#server.o: server.c server.h
+#onlineClient.o: onlineClient.c server.h
+#inHouseClient.o: inHouseClient.c server.h
+#kitchenServer.o: kitchenServer.c server.h

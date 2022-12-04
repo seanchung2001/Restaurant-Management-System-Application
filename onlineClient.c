@@ -52,8 +52,8 @@ int main(int argc, char **argv) {
 	scanf("%s", lName);
 
 	printf("\nInput phone number:\n");
-	int phoneNum;
-	scanf("%d", &phoneNum);
+	long long phoneNum;
+	scanf("%lld", &phoneNum);
 
 	uint16_t msg_type;
 	//build reservation
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
 			scanf("%s", onlineOrderMsg.menu_items[count]);
 			count ++;
 		}
-
+		strcpy(onlineOrderMsg.menu_items[count], "done");
 		//msgsendvs since sending iov and receiving int
 		if (-1 == MsgSend(server_coid, &onlineOrderMsg, sizeof(onlineOrderMsg), &confirmationNum, sizeof(confirmationNum))) {
 			printf("Error in Sending Message to Server\n");
