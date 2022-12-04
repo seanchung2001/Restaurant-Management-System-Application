@@ -5,7 +5,7 @@
 #define SERVER_H_
 
 #define SERVER_NAME "rmsa" //use this as the name to register in the pathname space to create and connect to the channel
-#define KITCHEN_SERVER_NAME "TEMP_NAME"
+#define KITCHEN_SERVER_NAME "kitchen"
 
 //Will remove this once we figure out what exactly needs to be sent back to the client
 #define RESERVATION_SUCCESS   "Reservation was successful!"
@@ -56,7 +56,7 @@ typedef struct recv_msg_reservation {
 	int day; //required
 	char first_name[MAX_STRING_LEN+1]; //required
 	char last_name[MAX_STRING_LEN+1]; //required
-	long long phone_num; //required
+	long long int phone_num; //required
 	int start_hour; //required
 	int start_min; //required
 	int end_hour; //required
@@ -80,7 +80,7 @@ typedef struct recv_msg_online_order {
 	char first_name[MAX_STRING_LEN+1];
 	char last_name[MAX_STRING_LEN+1];
 	char address[MAX_STRING_LEN+1];
-	long long phone_num;
+	long long int phone_num;
 	int order_num; //just for the kitchen server
 	int order_item_count; //just for the kitchen server
 } recv_msg_online_order_t;

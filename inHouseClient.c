@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
 			scanf("%s", inHouseOrderMsg.menu_items[count]);
 			count ++;
 		}
+		strcpy(inHouseOrderMsg.menu_items[count], "done");
 
 		//send msg, confirmationNum will be order number
 		if (-1 == MsgSend(server_coid, &inHouseOrderMsg, sizeof(inHouseOrderMsg), &confirmationNum, sizeof(confirmationNum))) {
@@ -105,19 +106,21 @@ int main(int argc, char **argv) {
 		//create and build msg
 		recv_table_print_receipt_t printReceiptMsg;
 		printReceiptMsg.type = GET_PRINT_RECEIPT_MSG_TYPE;
-		
+
 		printf("\nInput table number:\n");
 		int tableNum;
 		scanf("%d", &tableNum);
 		printReceiptMsg.table_num = tableNum;
 
 		//send msg, reply will be the actual receipt
-        char receipt[MAX_STRING_LEN];
-		if (-1 == MsgSend(server_coid, &printReceiptMsg, sizeof(printReceiptMsg), &receipt, sizeof(receipt))) {
+		resp_table_print_receipt_t respReceipt;
+		if (-1 == MsgSend(server_coid, &printReceiptMsg, sizeof(printReceiptMsg), &respReceipt, sizeof(respReceipt))) {
 			printf("Error in Sending Message to Server\n");
 			return EXIT_FAILURE;
 		};
-        printf("%s\n", receipt);
+		printf("\n*****************************************\n");
+		printf("Receipt for the order: %d\n", respReceipt.orderID);
+        printf("Total: %d\n", respReceipt.total);
     }
 	//else, its a wrong input, exit
 	else {
