@@ -31,24 +31,13 @@ int main(int argc, char **argv) {
     int initialChoice;
     scanf("%d", &initialChoice);
 
-	//get current date and time
-	int hours, minutes, day, month, year;
-	time_t now;
-    time(&now);
-	struct tm *local = localtime(&now);
-	day = local->tm_mday;            // get day of month (1 to 31)
-    month = local->tm_mon + 1;      // get month of year (0 to 11)
-    year = local->tm_year + 1900;   // get year since 1900
-	hours = local->tm_hour;         // get hours since midnight (0-23)
-    minutes = local->tm_min;        // get minutes passed after the hour (0-59)
-
 	//getting first/last names, and phone number is required for both options
 	printf("\nInput your first name:\n");
-	char fName[MAX_STRING_LEN];
+	char fName[MAX_STRING_LEN+1];
 	scanf("%s", fName);
 
 	printf("\nInput your last name:\n");
-	char lName[MAX_STRING_LEN];
+	char lName[MAX_STRING_LEN+1];
 	scanf("%s", lName);
 
 	printf("\nInput phone number:\n");
@@ -68,8 +57,19 @@ int main(int argc, char **argv) {
 		scanf("%d", &numPeople);
 		reservationMsg.num_people = numPeople;
 
+		printf("\nInput year of the desired reservation date:\n");
+		int year;
+		scanf("%d", &year);
 		reservationMsg.year = year;
+
+		printf("\nInput month of the desired reservation date:\n");
+		int month;
+		scanf("%d", &month);
 		reservationMsg.month = month;
+
+		printf("\nInput day of the desired reservation date:\n");
+		int day;
+		scanf("%d", &day);
 		reservationMsg.day = day;
 
 		sprintf(reservationMsg.first_name, fName);
@@ -96,6 +96,18 @@ int main(int argc, char **argv) {
 		scanf("%d", &endMin);
 		reservationMsg.end_min = endMin;
 
+		printf("\nChoose the type of table. Here are the options:\n");
+		printf("For window seats, input: \"window\"\n");
+		printf("For bar seats, input: \"bar\"\n");
+		printf("For party size seats, input: \"party\"\n");
+		printf("For couple seats, input: \"couple\"\n");
+		printf("For outdoor seats, input: \"outdoor\"\n");
+		printf("For patio seats, input: \"patio\"\n");
+		printf("For booth seats, input: \"booth\"\n");
+		char tableSelection[MAX_STRING_LEN+1];
+		scanf("%s", tableSelection);
+		sprintf(reservationMsg.table_meta_tag, tableSelection);
+
 		//msgsendvs since sending iov and receiving int
 		if (-1 == MsgSend(server_coid, &reservationMsg, sizeof(reservationMsg), &confirmationNum, sizeof(confirmationNum))) {
 			printf("Error in Sending Message to Server\n");
@@ -108,6 +120,17 @@ int main(int argc, char **argv) {
 
 		recv_msg_online_order_t onlineOrderMsg;
 		onlineOrderMsg.type = CREATE_ONLINE_ORDER_MSG_TYPE;
+
+		//get current date and time
+		int hours, minutes, day, month, year;
+		time_t now;
+		time(&now);
+		struct tm *local = localtime(&now);
+		day = local->tm_mday;            // get day of month (1 to 31)
+		month = local->tm_mon + 1;      // get month of year (0 to 11)
+		year = local->tm_year + 1900;   // get year since 1900
+		hours = local->tm_hour;         // get hours since midnight (0-23)
+		minutes = local->tm_min;        // get minutes passed after the hour (0-59)
 
 		onlineOrderMsg.year = year;
 		onlineOrderMsg.month = month;
