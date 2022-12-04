@@ -42,10 +42,8 @@ int main(int argc, char **argv) {
 	long long phoneNum;
 	scanf("%lld", &phoneNum);
 
-	uint16_t msg_type;
 	//build reservation
     if (initialChoice == 1) {
-		msg_type = CREATE_RESERVATION_MSG_TYPE;
 		//create and build msg
 		recv_msg_reservation_t reservationMsg;
 		reservationMsg.type = CREATE_RESERVATION_MSG_TYPE;
@@ -122,8 +120,6 @@ int main(int argc, char **argv) {
     }
 	//build online order
     else if (initialChoice == 2) {
-		msg_type = CREATE_ONLINE_ORDER_MSG_TYPE;
-
 		recv_msg_online_order_t onlineOrderMsg;
 		onlineOrderMsg.type = CREATE_ONLINE_ORDER_MSG_TYPE;
 
