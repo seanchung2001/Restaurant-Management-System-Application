@@ -17,8 +17,6 @@ int main(int argc, char **argv) {
 		printf("Error: Can not open connection to server with the given name.\n");
 		return EXIT_FAILURE;
 	}
-	//reply of the msg will be reservation num or order num
-	int confirmationNum;
 
     //start of online client, ask user if they want to
     //1) make a reservation, or
@@ -108,11 +106,19 @@ int main(int argc, char **argv) {
 		scanf("%s", tableSelection);
 		sprintf(reservationMsg.table_meta_tag, tableSelection);
 
+		//reply
+		resp_msg_reservation_t resp_reservation;
+
 		//msgsendvs since sending iov and receiving int
-		if (-1 == MsgSend(server_coid, &reservationMsg, sizeof(reservationMsg), &confirmationNum, sizeof(confirmationNum))) {
+		if (-1 == MsgSend(server_coid, &reservationMsg, sizeof(reservationMsg), &resp_reservation, sizeof(resp_reservation))) {
 			printf("Error in Sending Message to Server\n");
 			return EXIT_FAILURE;
 		};
+
+		printf("\n*****************************************\n");
+		printf("Reservation successfully made.\n");
+		printf("Reservation number: %d\n", resp_reservation.reservationID);
+		printf("At table: %d\n", resp_reservation.table_num);
     }
 	//build online order
     else if (initialChoice == 2) {
@@ -161,12 +167,16 @@ int main(int argc, char **argv) {
 			count ++;
 		}
 		strcpy(onlineOrderMsg.menu_items[count], "done");
-		//msgsendvs since sending iov and receiving int
-		if (-1 == MsgSend(server_coid, &onlineOrderMsg, sizeof(onlineOrderMsg), &confirmationNum, sizeof(confirmationNum))) {
+
+		//reply
+		resp_msg_online_order_t resp_onlineOrder;
+
+		//send msg
+		if (-1 == MsgSend(server_coid, &onlineOrderMsg, sizeof(onlineOrderMsg), &resp_onlineOrder, sizeof(resp_onlineOrder))) {
 			printf("Error in Sending Message to Server\n");
 			return EXIT_FAILURE;
 		};
-		onlineOrderMsg.order_num = confirmationNum;
+		onlineOrderMsg.order_num = resp_onlineOrder.orderID;
 
 		//close off current connection to the main server
 		name_close(server_coid);
@@ -183,29 +193,16 @@ int main(int argc, char **argv) {
 			printf("Error in Sending Message to Kitchen Server\n");
 			return EXIT_FAILURE;
 		};
+
+		printf("\n*****************************************\n");
+		printf("Online order successfully made.\n");
+		printf("Order number: %d\n", resp_onlineOrder.orderID);
+		printf("Order total: %d\n", resp_onlineOrder.total);
     }
 	//else, its a wrong input, exit
 	else {
 		printf("Wrong input. Try again.\n");
 		return EXIT_FAILURE;
-	}
-
-	//confirmation code of negative value, it means an error
-	if (confirmationNum < 0) {
-		printf("Error: Server was not able to complete the request.\n");
-		return EXIT_FAILURE;
-	}
-	//else, note customer their action is complete, and give them the # associated
-	else {
-		if (msg_type == CREATE_RESERVATION_MSG_TYPE) {
-			printf("Reservation successfully made.\n");
-			printf("Reservation number: %d\n", confirmationNum);
-		}
-		//online order
-		else if (msg_type == CREATE_ONLINE_ORDER_MSG_TYPE) {
-			printf("Online order successfully made.\n");
-			printf("Online order number: %d\n", confirmationNum);
-		}
 	}
 
 	return 0;
