@@ -202,5 +202,20 @@ typedef struct table_tag {
 	char meta_tag_name[MAX_STRING_LEN+1]; //window, bar, outdoors, party size, couple seats (two seats for couples), etc.
 }table_tag_t;
 
+typedef struct profile_inputs {
+	char login[MAX_STRING_LEN+1];
+	char password[MAX_STRING_LEN+1];
+	char restaurant_name[MAX_STRING_LEN+1];
+	char address[MAX_STRING_LEN+1];
+	char description[MAX_STRING_LEN+1];
+	char opens[MAX_STRING_LEN+1];
+	char closes[MAX_STRING_LEN+1];
+}profile_inputs_t;
+
+typedef struct profile_login {
+	char login[MAX_STRING_LEN+1];
+	char password[MAX_STRING_LEN+1];
+}profile_login_t;
+
 
 #endif /* SERVER_H_ */
