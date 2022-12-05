@@ -177,6 +177,9 @@ int main(void) {
 	}
 
 	//restaurant initialization
+	char option[MAX_STRING_LEN];
+	menu_item_t newMenuItem;
+	int i = 0;
 	if (loggedIn == 1) {
 
 		//create and insert new tags for the tables into the database
@@ -225,32 +228,35 @@ int main(void) {
 		insert_tables_database(hdl);
 
 		//add the menu items
-		menu_item_t menu_item1;
-		strcpy(menu_item1.name, "root beer float");
-		menu_item1.count = 0;
-		strcpy(menu_item1.description, "16oz root beer float");
-		menu_item1.price = 4.99;
-		strcpy(menu_item1.type, "beverage");
-		menu[0] = menu_item1;
-		insert_menu_item(hdl, &menu_item1);
-		menu_item_t menu_item2;
-		strcpy(menu_item2.name, "steak and lobster");
-		menu_item2.count = 0;
-		strcpy(menu_item2.description, "7oz sirloin wiht lobster tail");
-		menu_item2.price = 27.99;
-		strcpy(menu_item2.type, "main");
-		menu[1] = menu_item2;
-		insert_menu_item(hdl, &menu_item2);
-		menu_item_t menu_item3;
-		strcpy(menu_item3.name, "french fries");
-		menu_item3.count = 0;
-		strcpy(menu_item3.description, "seasoned with salt and pepper");
-		menu_item3.price = 6.99;
-		strcpy(menu_item3.type, "side");
-		menu[2] = menu_item3;
-		insert_menu_item(hdl, &menu_item3);
-	}
+		printf("Add new menu item (y or n): \n");
+		scanf("%s", option);
+		while (strcmp(option, "y") == 0) {
 
+			printf("New menu item name: \n");
+			scanf(" %[^\n]s", newMenuItem.name);
+			printf("Description: \n");
+			scanf(" %[^\n]s", newMenuItem.description);
+			printf("Price: \n");
+			scanf("%f", &newMenuItem.price);
+			printf("Type of item: \n");
+			scanf(" %[^\n]s", newMenuItem.type);
+
+			if (insert_menu_item(hdl, &newMenuItem) >= 0 && i < MAX_MENU_ITEMS) {
+				menu[i] = newMenuItem;
+				i++;
+				printf("Item successfully added to menu. Add another item (y or n): \n");
+				scanf("%s", option);
+				while (strcmp(option, "n") == 0) {
+					break;
+				}
+			} else {
+				printf("Item could not be added. Try again \n");
+			}
+		}
+
+	}
+	printf("%d\n", i);
+	printf("Restaurant successfully initialized\n");
 
 	//sean's section
 	//register for our name for a channel
