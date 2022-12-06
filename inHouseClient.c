@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 		};
 		printf("\n*****************************************\n");
 		printf("Receipt for the order: %d\n", respReceipt.orderID);
-        printf("Total: %d\n", respReceipt.total);
+        printf("Total: %.2f\n", respReceipt.total);
     }
 	//else, its a wrong input, exit
 	else {
