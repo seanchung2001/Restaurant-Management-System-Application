@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
 		printf("\n*****************************************\n");
 		printf("Online order successfully made.\n");
 		printf("Order number: %d\n", resp_onlineOrder.orderID);
-		printf("Order total: %d\n", resp_onlineOrder.total);
+		printf("Order total: %.2f\n", resp_onlineOrder.total);
     }
 	//else, its a wrong input, exit
 	else {
