@@ -32,11 +32,11 @@ int main(int argc, char **argv) {
 	//getting first/last names, and phone number is required for both options
 	printf("\nInput your first name:\n");
 	char fName[MAX_STRING_LEN+1];
-	scanf("%s", fName);
+	scanf(" %[^\n]s", fName);
 
 	printf("\nInput your last name:\n");
 	char lName[MAX_STRING_LEN+1];
-	scanf("%s", lName);
+	scanf(" %[^\n]s", lName);
 
 	printf("\nInput phone number:\n");
 	long long phoneNum;
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 		//create and build msg
 		recv_msg_reservation_t reservationMsg;
 		reservationMsg.type = CREATE_RESERVATION_MSG_TYPE;
-		
+		//take the inputs
 		printf("\nInput number of people:\n");
 		int numPeople;
 		scanf("%d", &numPeople);
@@ -101,12 +101,11 @@ int main(int argc, char **argv) {
 		printf("For patio seats, input: \"patio\"\n");
 		printf("For booth seats, input: \"booth\"\n");
 		char tableSelection[MAX_STRING_LEN+1];
-		scanf("%s", tableSelection);
+		scanf(" %[^\n]s", tableSelection);
 		sprintf(reservationMsg.table_meta_tag, tableSelection);
 
 		//reply
 		resp_msg_reservation_t resp_reservation;
-
 		//msgsendvs since sending iov and receiving int
 		if (-1 == MsgSend(server_coid, &reservationMsg, sizeof(reservationMsg), &resp_reservation, sizeof(resp_reservation))) {
 			printf("Error in Sending Message to Server\n");
@@ -133,33 +132,33 @@ int main(int argc, char **argv) {
 		year = local->tm_year + 1900;   // get year since 1900
 		hours = local->tm_hour;         // get hours since midnight (0-23)
 		minutes = local->tm_min;        // get minutes passed after the hour (0-59)
-
+		//assign the date/time
 		onlineOrderMsg.year = year;
 		onlineOrderMsg.month = month;
 		onlineOrderMsg.day = day;
 		onlineOrderMsg.hour = hours;
 		onlineOrderMsg.minutes = minutes;
-
+		//assign names and phone number
 		sprintf(onlineOrderMsg.first_name, fName);
 		sprintf(onlineOrderMsg.last_name, lName);
 		onlineOrderMsg.phone_num = phoneNum;
-
+		//take address
 		printf("\nInput your address:\n");
 		char address[MAX_STRING_LEN];
-		scanf("%s", address);
+		scanf(" %[^\n]s", address);
 		sprintf(onlineOrderMsg.address, address);
-
+		//take total number of orders to build the order array
 		printf("\nInput how many items you would like to order.\n");
 		printf("Maximum number of items you can order is %d.\n", MAX_ONLINE_ORDER_ITEMS);
 		printf("\nEnter input:\n");
 		int orderCount;
 		scanf("%d", &orderCount);
 		onlineOrderMsg.order_item_count = orderCount;
-
+		//build the array of orders
 		int count = 0;
 		while (count < orderCount) {
 			printf("\nInput the items to order, one at a time.\n");
-			scanf("%s", onlineOrderMsg.menu_items[count]);
+			scanf(" %[^\n]s", onlineOrderMsg.menu_items[count]);
 			count ++;
 		}
 		strcpy(onlineOrderMsg.menu_items[count], "done");

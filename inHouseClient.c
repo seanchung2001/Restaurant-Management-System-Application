@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     //3) get receipt
     //exit client for any other input
     printf("------In-House Client------\n");
-    printf("Input:\n1 to get a table, or\n2 to make a order, or 3 to get receipt.\n");
+    printf("Input:\n1 to get a table, or\n2 to make a order, or \n3 to get receipt.\n");
 	printf("Other inputs will lead the program to terminate.\n");
 	printf("Enter your choice:\n");
     int initialChoice;
@@ -38,12 +38,11 @@ int main(int argc, char **argv) {
 		//create and build msg
 		recv_get_table_in_house_t getTableMsg;
 		getTableMsg.type = GET_TABLE_IN_HOUSE_MSG_TYPE;
-		
+		//take input
 		printf("\nInput number of people:\n");
 		int numPeople;
 		scanf("%d", &numPeople);
 		getTableMsg.num_people = numPeople;
-
 		//send msg, confirmationNum will be table number
 		if (-1 == MsgSend(server_coid, &getTableMsg, sizeof(getTableMsg), &confirmationNum, sizeof(confirmationNum))) {
 			printf("Error in Sending Message to Server\n");
@@ -53,46 +52,42 @@ int main(int argc, char **argv) {
 	//make an in-house order
     else if (initialChoice == 2) {
 		msg_type = CREATE_TABLE_ORDER_MSG_TYPE;
-
+		//build msg
 		recv_msg_table_order_t inHouseOrderMsg;
 		inHouseOrderMsg.type = CREATE_TABLE_ORDER_MSG_TYPE;
-
+		//take input
 		printf("\nInput table number:\n");
 		int tableNum;
 		scanf("%d", &tableNum);
         inHouseOrderMsg.table_num = tableNum;
-
+		//take total number of orders
 		printf("\nInput how many items you would like to order.\n");
 		printf("Maximum number of items you can order is %d.\n", MAX_TABLE_ORDER_ITEMS);
 		printf("\nEnter input:\n");
 		int orderCount;
 		scanf("%d", &orderCount);
         inHouseOrderMsg.order_item_count = orderCount;
-
+		//build the array of orders
 		int count = 0;
 		while (count < orderCount) {
 			printf("\nInput the items to order, one at a time.\n");
-			scanf("%s", inHouseOrderMsg.menu_items[count]);
+			scanf(" %[^\n]s", inHouseOrderMsg.menu_items[count]);
 			count ++;
 		}
 		strcpy(inHouseOrderMsg.menu_items[count], "done");
-
 		//send msg, confirmationNum will be order number
 		if (-1 == MsgSend(server_coid, &inHouseOrderMsg, sizeof(inHouseOrderMsg), &confirmationNum, sizeof(confirmationNum))) {
 			printf("Error in Sending Message to Server\n");
 			return EXIT_FAILURE;
 		};
         inHouseOrderMsg.order_num = confirmationNum;
-
         //close off current connection to the main server
         name_close(server_coid);
-
         //open new connection to kitchen server
         if ((server_coid = name_open(KITCHEN_SERVER_NAME, 0)) == -1) {
             printf("Error: Can not open connection to kitchen server with the given name.\n");
             return EXIT_FAILURE;
         }
-
         //send msg, kitchenReply is useless
         int kitchenReply;
         if (-1 == MsgSend(server_coid, &inHouseOrderMsg, sizeof(inHouseOrderMsg), &kitchenReply, sizeof(kitchenReply))) {
@@ -106,12 +101,11 @@ int main(int argc, char **argv) {
 		//create and build msg
 		recv_table_print_receipt_t printReceiptMsg;
 		printReceiptMsg.type = GET_PRINT_RECEIPT_MSG_TYPE;
-
+		//takes table number
 		printf("\nInput table number:\n");
 		int tableNum;
 		scanf("%d", &tableNum);
 		printReceiptMsg.table_num = tableNum;
-
 		//send msg, reply will be the actual receipt
 		resp_table_print_receipt_t respReceipt;
 		if (-1 == MsgSend(server_coid, &printReceiptMsg, sizeof(printReceiptMsg), &respReceipt, sizeof(respReceipt))) {

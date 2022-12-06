@@ -8,9 +8,8 @@
 #include <string.h>
 
 int main(int argc, char **argv) {   
-
+    //inital msg
     printf("Kitchen Server Running...\n");
-
     //kitchen will only take orders
     typedef union {
         uint16_t type;
@@ -18,19 +17,16 @@ int main(int argc, char **argv) {
         recv_msg_online_order_t online_order;
         recv_msg_table_order_t table_order;
     } recv_buf_t;
-
     //variables
     name_attach_t *attach;
 	int rcvid;
 	recv_buf_t client_msg;
     int kitchenReply = 0;
-
     //register for our name for a channel
 	//register a name in the pathname space and create a channel
 	if ((attach = name_attach(NULL, KITCHEN_SERVER_NAME, _NTO_CHF_DISCONNECT)) == NULL) {
 		return EXIT_FAILURE;
 	}
-
     //the kitchen server will always be receiving msgs
 	while(1) {
 		//code to receive msg or pulse from client
@@ -57,7 +53,9 @@ int main(int argc, char **argv) {
 		}
 		// if it was a message
 		else {
+            //check msg types
 			switch(client_msg.type) {
+                //if its an online order,print orderer's name
                 case CREATE_ONLINE_ORDER_MSG_TYPE: 
                     printf("\n*****************************************\n");
                     printf("Online Order received\n");
@@ -71,7 +69,7 @@ int main(int argc, char **argv) {
                     //reply with a confirmation (0)
                     MsgReply(rcvid, 0, &kitchenReply, sizeof(kitchenReply));
                     break;
-
+                //if table order, just print table number
                 case CREATE_TABLE_ORDER_MSG_TYPE:
                     printf("\n*****************************************\n");
                     printf("In-House Order received\n");
@@ -85,7 +83,7 @@ int main(int argc, char **argv) {
                     //reply with a confirmation (0)
                     MsgReply(rcvid, 0, &kitchenReply, sizeof(kitchenReply));
                     break;
-
+                //if other cases
                 default:
 					printf("None of the message types were chosen\n");
 					break;
