@@ -106,6 +106,157 @@ int main(void) {
 	printf("now: %d-%d-%d %d:%d\n", dateTime.tm_year+1900, dateTime.tm_mon+1, dateTime.tm_mday, calculate_current_hour(dateTime.tm_hour), dateTime.tm_min);
 
 	//mohammad's section
+	//basic authentication for securing functionality
+	//create profile if no profile is found in the database
+
+	//use profile structs for creating profile if it does not exist and then
+	//inset it into the database
+	profile_t profile;
+	profile_inputs_t profile_input;
+	int rows = 0;
+	int cols = 0;
+	qdb_result_t* res;
+
+	while (get_profile(hdl, &res, &rows, &cols) <= 0) {
+
+		printf("--- PROFILE CREATION ---\n");
+		printf("Enter Restaurant Name: \n");
+		scanf(" %[^\n]s", profile_input.restaurant_name);
+		strcpy(profile.restaurant_name, profile_input.restaurant_name);
+
+		printf("Enter Restaurant Address: \n");
+		scanf(" %[^\n]s", profile_input.address);
+		strcpy(profile.address, profile_input.address);
+
+		printf("Enter Restaurant Description: \n");
+		scanf(" %[^\n]s", profile_input.description);
+		strcpy(profile.description, profile_input.description);
+
+		printf("Enter Restaurant opening hour: \n");
+		scanf(" %[^\n]s", profile_input.opens);
+		strcpy(profile.opens, profile_input.opens);
+
+		printf("Enter Restaurant closing hour: \n");
+		scanf(" %[^\n]s", profile_input.closes);
+		strcpy(profile.closes, profile_input.closes);
+
+		printf("Enter Restaurant login: \n");
+		scanf(" %[^\n]s", profile_input.login);
+		strcpy(profile.login, profile_input.login);
+
+		printf("Enter Restaurant password: \n");
+		scanf(" %[^\n]s", profile_input.password);
+		strcpy(profile.password, profile_input.password);
+
+		insert_profile(hdl, &profile);
+		get_profile(hdl, &res, &rows, &cols);
+
+	}
+
+	//if profile is found in the database, login
+	profile_login_t profile_login;
+	int loggedIn = 0;
+	printf("--- PROFILE LOGIN ---\n");
+	while (loggedIn == 0){
+
+		printf("Enter profile login: \n");
+		scanf("%s", profile_login.login);
+		strcpy(profile.login, profile_login.login);
+
+		printf("Enter password: \n");
+		scanf("%s", profile_login.password);
+		strcpy(profile.password, profile_login.password);
+
+		if (login_profile(hdl, profile.login, profile.password) < 0){
+			printf("Error in logging in. Try again\n");
+		} else {
+			printf("PROFILE LOGGED IN AS: %s\n", profile.login);
+			loggedIn = 1;
+		}
+
+	}
+
+	//restaurant initialization
+	char option[MAX_STRING_LEN];
+	menu_item_t newMenuItem;
+	int i = 0;
+	if (loggedIn == 1) {
+
+		//create and insert new tags for the tables into the database
+		insert_meta_tag(hdl, WINDOW_SEATS);
+		insert_meta_tag(hdl, BAR_SEATS);
+		insert_meta_tag(hdl, PARTY_SIZE_SEATS);
+		insert_meta_tag(hdl, COUPLE_SEATS);
+		insert_meta_tag(hdl, OUTDOOR_SEATS);
+		insert_meta_tag(hdl, PATIO_SEATS);
+		insert_meta_tag(hdl, BOOTH_SEATS);
+
+		//insert the table tags into the database
+		insert_table_tag(hdl, 3, COUPLE_SEATS);
+		insert_table_tag(hdl, 0, BAR_SEATS);
+		insert_table_tag(hdl, 48, PARTY_SIZE_SEATS);
+		insert_table_tag(hdl, 14, OUTDOOR_SEATS);
+		insert_table_tag(hdl, 22, PATIO_SEATS);
+		insert_table_tag(hdl, 36, BOOTH_SEATS);
+
+		table_tag_t tableTag1;
+		strcpy(tableTag1.meta_tag_name, COUPLE_SEATS);
+		tableTag1.table_num = 3;
+		table_tags[0] = tableTag1;
+		table_tag_t tableTag2;
+		strcpy(tableTag2.meta_tag_name, BAR_SEATS);
+		tableTag2.table_num = 0;
+		table_tags[1]= tableTag2;
+		table_tag_t tableTag3;
+		strcpy(tableTag3.meta_tag_name, PARTY_SIZE_SEATS);
+		tableTag3.table_num = 48;
+		table_tags[2]= tableTag3;
+		table_tag_t tableTag4;
+		strcpy(tableTag4.meta_tag_name, OUTDOOR_SEATS);
+		tableTag2.table_num = 14;
+		table_tags[3]= tableTag4;
+		table_tag_t tableTag5;
+		strcpy(tableTag5.meta_tag_name, PATIO_SEATS);
+		tableTag5.table_num = 22;
+		table_tags[4]= tableTag5;
+		table_tag_t tableTag6;
+		strcpy(tableTag6.meta_tag_name, BOOTH_SEATS);
+		tableTag6.table_num = 36;
+		table_tags[5]= tableTag6;
+
+		//insert the tables into the database
+		insert_tables_database(hdl);
+
+		//add the menu items
+		printf("Add new menu item (y or n): \n");
+		scanf("%s", option);
+		while (strcmp(option, "y") == 0) {
+
+			printf("New menu item name: \n");
+			scanf(" %[^\n]s", newMenuItem.name);
+			printf("Description: \n");
+			scanf(" %[^\n]s", newMenuItem.description);
+			printf("Price: \n");
+			scanf("%f", &newMenuItem.price);
+			printf("Type of item: \n");
+			scanf(" %[^\n]s", newMenuItem.type);
+
+			if (insert_menu_item(hdl, &newMenuItem) >= 0 && i < MAX_MENU_ITEMS) {
+				menu[i] = newMenuItem;
+				i++;
+				printf("Item successfully added to menu. Add another item (y or n): \n");
+				scanf("%s", option);
+				while (strcmp(option, "n") == 0) {
+					break;
+				}
+			} else {
+				printf("Item could not be added. Try again \n");
+			}
+		}
+
+	}
+	printf("%d\n", i);
+	printf("Restaurant successfully initialized\n");
 
 	//sean's section
 	//register for our name for a channel
@@ -120,73 +271,6 @@ int main(void) {
 	itime.it_interval.tv_sec = 60; //expire every 1 minute
 	itime.it_interval.tv_nsec = 0;
 	timer_settime(timerID, 0, &itime, NULL);
-
-	//insert tables into db
-	insert_tables_database(hdl);
-	//insert meta tags into db
-	insert_meta_tag(hdl, WINDOW_SEATS);
-	insert_meta_tag(hdl, BAR_SEATS);
-	insert_meta_tag(hdl, PARTY_SIZE_SEATS);
-	insert_meta_tag(hdl, COUPLE_SEATS);
-	insert_meta_tag(hdl, OUTDOOR_SEATS);
-	insert_meta_tag(hdl, PATIO_SEATS);
-	insert_meta_tag(hdl, BOOTH_SEATS);
-	//insert table tags into db (this is for testing and should be added by mohammad when doing profile)
-	insert_table_tag(hdl, 3, COUPLE_SEATS);
-	insert_table_tag(hdl, 0, BAR_SEATS);
-	insert_table_tag(hdl, 48, PARTY_SIZE_SEATS);
-	insert_table_tag(hdl, 14, OUTDOOR_SEATS);
-	insert_table_tag(hdl, 22, PATIO_SEATS);
-	insert_table_tag(hdl, 36, BOOTH_SEATS);
-	table_tag_t tableTag1;
-	strcpy(tableTag1.meta_tag_name, COUPLE_SEATS);
-	tableTag1.table_num = 3;
-	table_tags[0] = tableTag1;
-	table_tag_t tableTag2;
-	strcpy(tableTag2.meta_tag_name, BAR_SEATS);
-	tableTag2.table_num = 0;
-	table_tags[1]= tableTag2;
-	table_tag_t tableTag3;
-	strcpy(tableTag3.meta_tag_name, PARTY_SIZE_SEATS);
-	tableTag3.table_num = 48;
-	table_tags[2]= tableTag3;
-	table_tag_t tableTag4;
-	strcpy(tableTag4.meta_tag_name, OUTDOOR_SEATS);
-	tableTag2.table_num = 14;
-	table_tags[3]= tableTag4;
-	table_tag_t tableTag5;
-	strcpy(tableTag5.meta_tag_name, PATIO_SEATS);
-	tableTag5.table_num = 22;
-	table_tags[4]= tableTag5;
-	table_tag_t tableTag6;
-	strcpy(tableTag6.meta_tag_name, BOOTH_SEATS);
-	tableTag6.table_num = 36;
-	table_tags[5]= tableTag6;
-	//Insert menu items (this is for testing and should be added by mohammad when doing profile)
-	menu_item_t menu_item1;
-	strcpy(menu_item1.name, "root+beer+float");
-	menu_item1.count = 0;
-	strcpy(menu_item1.description, "16oz root beer float");
-	menu_item1.price = 4.99;
-	strcpy(menu_item1.type, "beverage");
-	menu[0] = menu_item1;
-	insert_menu_item(hdl, &menu_item1);
-	menu_item_t menu_item2;
-	strcpy(menu_item2.name, "steak+lobster");
-	menu_item2.count = 0;
-	strcpy(menu_item2.description, "7oz sirloin wiht lobster tail");
-	menu_item2.price = 27.99;
-	strcpy(menu_item2.type, "main");
-	menu[1] = menu_item2;
-	insert_menu_item(hdl, &menu_item2);
-	menu_item_t menu_item3;
-	strcpy(menu_item3.name, "french+fries");
-	menu_item3.count = 0;
-	strcpy(menu_item3.description, "seasoned with salt and pepper");
-	menu_item3.price = 6.99;
-	strcpy(menu_item3.type, "side");
-	menu[2] = menu_item3;
-	insert_menu_item(hdl, &menu_item3);
 
 	while (1) {
 		//receive message/pulse
