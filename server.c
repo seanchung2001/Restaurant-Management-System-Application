@@ -193,7 +193,7 @@ int main(void) {
 
 		//insert the table tags into the database
 		insert_table_tag(hdl, 3, COUPLE_SEATS);
-		insert_table_tag(hdl, 0, BAR_SEATS);
+		insert_table_tag(hdl, 10, BAR_SEATS);
 		insert_table_tag(hdl, 48, PARTY_SIZE_SEATS);
 		insert_table_tag(hdl, 14, OUTDOOR_SEATS);
 		insert_table_tag(hdl, 22, PATIO_SEATS);
@@ -299,7 +299,7 @@ int main(void) {
 							printf("reservation ended\n");
 						}
 					}
-					//if (calculate_current_hour(dateTime.tm_hour) == 0 && dateTime.tm_min == 0) {
+					if (calculate_current_hour(dateTime.tm_hour) == 0 && dateTime.tm_min == 0) {
 						//Write stuff to database and clear array of structs
 						for (int i = 0; i < num_future_reservations; i++) {
 							insert_reservation(hdl, &future_reservations[i]);
@@ -370,7 +370,7 @@ int main(void) {
 							printf("reservations[i] for testing, res first name: %s, phone num: %lld, table_num: %d\n", today_reservations[i].first_name, today_reservations[i].phone_num, today_reservations[i].table_num);
 						}
 					break;
-				//}
+				}
 			}
 		}
 		else{
@@ -776,6 +776,7 @@ int get_table_in_house(int num_people) {
 
 float table_print_receipt(int table_num) {
 	float total = 0;
+
 	for (int i = 0; i < num_existing_orders; i++) {
 		if (table_orders_existing[i].table_num == table_num) {
 			for (int j = 0; j < MAX_MENU_ITEMS; j++) {
@@ -840,10 +841,6 @@ int insert_tables_database(qdb_hdl_t *hdl) {
 		tmpTable.isReserved = 0;
 		tmpTable.num_seats = numSeats;
 		tmpTable.table_num = i+1;
-		if (insert_table(hdl, &tmpTable) == -1) {
-			printf("error writing to 'tables' database\n");
-			return -1;
-		}
 		tables[i] = tmpTable;
 		tables_size++;
 	}
